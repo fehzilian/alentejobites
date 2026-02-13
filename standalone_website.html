@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alentejo Bites - Évora's Walking Food & Wine Experiences</title>
+    
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#C9A961',
+                        terracotta: '#C7745C',
+                        olive: '#5F6F52',
+                        charcoal: '#2c2c2c',
+                        cream: '#FAF8F3',
+                    },
+                    fontFamily: {
+                        sans: ['Lato', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 0.5s ease-out',
+                        slideDown: 'slideDown 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #FAF8F3; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #FAF8F3; }
+        ::-webkit-scrollbar-thumb { background: #C9A961; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-presets="react,typescript">
+        const { useState, useEffect, useRef } = React;
+
+        // --- DATA & TYPES ---
+
+        const Page = {
+            HOME: 'home',
+            ABOUT: 'about',
+            EVENING_TOUR: 'evening-tour',
+            BRUNCH_TOUR: 'brunch-tour',
+            PRIVATE: 'private',
+            CONTACT: 'contact',
+            TERMS: 'terms',
+            CANCELLATION: 'cancellation',
+            BLOG: 'blog'
+        };
+
+        const TOURS = [
+            {
+                id: 'evening',
+                title: "The Évora Evening Bites",
+                tagline: "\"Where every bite tells Évora’s story\"",
+                description: "A guided walking dinner through Évora’s UNESCO historic center. Experience Premium Porco Preto presunto, the famous bifana, warm seasonal petiscos in a local tavern, and a conventual dessert finale — all paired with excellent Alentejo wines.",
+                price: 59,
+                regularPrice: 69,
+                image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                time: "5:00 PM - 8:00 PM",
+                duration: "3 Hours",
+                page: Page.EVENING_TOUR,
+                checkoutUrl: "https://book.stripe.com/test_eVaeVn09t3e88wwdQQ", // UPDATE THIS WITH YOUR STRIPE LINK
+                maxCapacity: 12
+            },
+            {
+                id: 'brunch',
+                title: "The Brunch Bites",
+                tagline: "\"Morning traditions & market flavors\"",
+                description: "A relaxed morning walk through Évora’s market culture. Enjoy coffee and pastries in historic cafés, tastings at Évora’s municipal market, and fresh artisan bread with olive oil experiences.",
+                price: 49,
+                regularPrice: 59,
+                image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                time: "10:00 AM - 1:00 PM",
+                duration: "3 Hours",
+                page: Page.BRUNCH_TOUR,
+                checkoutUrl: "https://book.stripe.com/test_eVaeVn09t3e88wwdQQ", // UPDATE THIS WITH YOUR STRIPE LINK
+                maxCapacity: 10
+            }
+        ];
+
+        const BLOG_POSTS = [
+            { id: 1, title: "5 Secret Wine Spots in Alentejo", date: "Jan 12", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop", category: "Wine & Drink", excerpt: "Forget the big commercial wineries. Here’s where the locals go.", author: "Felippe Santos" },
+            { id: 2, title: "Why Évora is the Capital of Culture 2027", date: "Jan 05", image: "https://images.unsplash.com/photo-1590076215667-875d4e0ce5a0?w=400&h=300&fit=crop", category: "Culture", excerpt: "The city is buzzing with preparation. See what's changing.", author: "Maria Costa" },
+            { id: 3, title: "Bifana: The Story Behind the Sandwich", date: "Dec 28", image: "https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?w=400&h=300&fit=crop", category: "Food History", excerpt: "It looks simple, but the bifana is a religion in Portugal.", author: "Felippe Santos" }
+        ];
+
+        // --- UI COMPONENTS ---
+
+        const Button = ({ children, variant = 'primary', fullWidth = false, className = '', ...props }) => {
+            const baseStyles = "px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 shadow-md text-sm md:text-base";
+            const variants = {
+                primary: "bg-terracotta text-white hover:bg-olive border-2 border-transparent",
+                secondary: "bg-transparent border-2 border-white text-white hover:bg-white hover:text-olive",
+                outline: "bg-transparent border-2 border-olive text-olive hover:bg-olive hover:text-white"
+            };
+            return (
+                <button className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`} {...props}>
+                    {children}
+                </button>
+            );
+        };
+
+        const Section = ({ className = '', children, id }) => (
+            <section id={id} className={`py-20 px-4 md:px-8 ${className}`}>
+                <div className="max-w-6xl mx-auto">
+                    {children}
+                </div>
+            </section>
+        );
+
+        const SectionTitle = ({ children, subtitle }) => (
+            <div className="text-center mb-16">
+                <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-olive mb-4 font-semibold">{children}</h2>
+                {subtitle && <p className="text-gray-500 text-lg md:text-xl italic font-serif">{subtitle}</p>}
+                <div className="w-24 h-1 bg-gold mx-auto mt-6 rounded-full opacity-60"></div>
+            </div>
+        );
+
+        const Modal = ({ isOpen, onClose, title, children }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative animate-fadeIn shadow-2xl">
+                        <button onClick={onClose} className="absolute top-4 right-6 text-4xl text-gray-400 hover:text-terracotta transition-colors leading-none">&times;</button>
+                        <div className="p-8 md:p-10">
+                            <h2 className="font-serif text-3xl text-olive mb-6 border-b pb-4 border-gold/20">{title}</h2>
+                            {children}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Drawer = ({ isOpen, onClose, children }) => {
+            if (!isOpen) return null;
+            return (
+                <>
+                    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
+                    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transform transition-transform duration-300 max-h-[85vh] overflow-y-auto animate-slideDown">
+                        <div className="sticky top-0 bg-white z-10 pt-4 pb-2 flex justify-center border-b border-gray-100">
+                             <div className="w-12 h-1.5 bg-gray-300 rounded-full mb-2"></div>
+                        </div>
+                        <button onClick={onClose} className="absolute top-4 right-6 text-gray-400 text-2xl">&times;</button>
+                        <div className="p-6 pb-24">{children}</div>
+                    </div>
+                </>
+            );
+        };
+
+        const SEO = ({ title }) => {
+            useEffect(() => { document.title = title; }, [title]);
+            return null;
+        };
+
+        // --- CALENDAR COMPONENT ---
+        const Calendar = ({ onDateSelect, selectedDate, availability = {}, maxCapacity = 12 }) => {
+            const [currentMonth, setCurrentMonth] = useState(new Date());
+
+            const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+            const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+
+            const handlePrevMonth = () => {
+                const today = new Date();
+                if (currentMonth.getMonth() > today.getMonth() || currentMonth.getFullYear() > today.getFullYear()) {
+                    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+                }
+            };
+            const handleNextMonth = () => {
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+            };
+
+            const handleDayClick = (day) => {
+                const clickedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (clickedDate >= today) onDateSelect(clickedDate);
+            };
+
+            const renderDays = () => {
+                const days = [];
+                for (let i = 0; i < firstDayOfMonth; i++) days.push(<div key={`empty-${i}`} className="h-10 w-10"></div>);
+                
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+                    const isPast = date < today;
+                    const isSelected = selectedDate && date.getDate() === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth();
+                    
+                    days.push(
+                        <button key={day} onClick={() => !isPast && handleDayClick(day)} disabled={isPast}
+                            className={`h-10 w-10 text-sm rounded-full flex items-center justify-center transition-colors
+                            ${isPast ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-cream text-charcoal font-medium'}
+                            ${isSelected ? '!bg-terracotta !text-white font-bold shadow-md' : ''}`}>
+                            {day}
+                        </button>
+                    );
+                }
+                return days;
+            };
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return (
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="flex justify-between items-center mb-4">
+                        <button onClick={handlePrevMonth} className="text-gray-400 hover:text-terracotta">←</button>
+                        <span className="font-serif font-bold text-olive">{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
+                        <button onClick={handleNextMonth} className="text-gray-400 hover:text-terracotta">→</button>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 mb-2 text-xs font-bold text-gray-400 text-center">
+                        <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1">{renderDays()}</div>
+                </div>
+            );
+        };
+
+        // --- LAYOUT ---
+        const Layout = ({ children, activePage, onNavigate, onBookClick }) => {
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setIsScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const navItems = [
+                { label: 'Home', page: Page.HOME },
+                { label: 'About', page: Page.ABOUT },
+                { label: 'Blog', page: Page.BLOG },
+                { label: 'Contact', page: Page.CONTACT },
+            ];
+
+            const logoSize = isScrolled ? 'h-14 w-14' : 'h-20 w-20';
+
+            return (
+                <div className="min-h-screen flex flex-col font-sans text-charcoal">
+                    <header className={`fixed w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-cream/95 backdrop-blur-md shadow-md py-2' : 'bg-transparent py-4'}`}>
+                        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                            <div className="cursor-pointer" onClick={() => onNavigate(Page.HOME)}>
+                                <div className="flex items-center gap-3">
+                                    <div className={`${logoSize} rounded-full bg-gradient-to-br from-gold to-terracotta flex items-center justify-center text-white font-bold text-xs shadow-lg`}>AB</div>
+                                    <span className={`font-serif font-bold text-xl md:text-2xl tracking-wide transition-colors ${!isScrolled && activePage === Page.HOME ? 'text-white drop-shadow-md' : 'text-olive'}`}>
+                                        Alentejo<span className="text-terracotta">.</span>Bites
+                                    </span>
+                                </div>
+                            </div>
+                            <nav className="hidden md:flex items-center gap-8">
+                                {navItems.map((item) => (
+                                    <button key={item.label} onClick={() => onNavigate(item.page)} className={`text-sm font-medium tracking-wide hover:text-terracotta transition-colors ${!isScrolled && activePage === Page.HOME ? 'text-white drop-shadow-sm' : 'text-charcoal'}`}>
+                                        {item.label}
+                                    </button>
+                                ))}
+                                <Button onClick={onBookClick} className="!py-2 !px-6 text-sm">Book Now</Button>
+                            </nav>
+                            <button className={`md:hidden text-2xl ${!isScrolled && activePage === Page.HOME ? 'text-white' : 'text-olive'}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</button>
+                        </div>
+                        {isMobileMenuOpen && (
+                            <div className="absolute top-full left-0 w-full bg-cream shadow-xl border-t border-gold/20 flex flex-col p-6 md:hidden gap-4 animate-slideDown">
+                                {navItems.map((item) => (
+                                    <button key={item.label} onClick={() => { onNavigate(item.page); setIsMobileMenuOpen(false); }} className="text-left text-lg py-2 border-b border-gray-100 text-olive">
+                                        {item.label}
+                                    </button>
+                                ))}
+                                <Button onClick={() => { onBookClick(); setIsMobileMenuOpen(false); }} fullWidth>Book Now</Button>
+                            </div>
+                        )}
+                    </header>
+                    <main className="flex-grow">{children}</main>
+                    <footer className="bg-charcoal text-white pt-16 pb-8 px-6 md:pb-6">
+                        <div className="max-w-7xl mx-auto border-t border-gray-700 pt-8 text-center text-gray-500 text-xs">
+                            <p>© 2026 Alentejo Bites. All rights reserved.</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        // --- PAGE COMPONENTS ---
+
+        const Home = ({ onNavigate, onBook, onBlogClick }) => {
+            return (
+                <>
+                    <SEO title="Évora Food Tour | Walking Food & Wine Experience" />
+                    <div className="relative h-[95vh] w-full overflow-hidden flex items-center justify-center text-center bg-gray-900">
+                         <div className="absolute inset-0 bg-gradient-to-br from-olive/80 to-charcoal/60 z-10" />
+                         <img src="https://images.unsplash.com/photo-1590076215667-875d4e0ce5a0?w=1200&h=800&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+                        <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
+                            <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn">Évora 2027 — European Capital of Culture</div>
+                            <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 leading-tight drop-shadow-lg">Évora Walking Food & Wine Experiences</h1>
+                            <Button onClick={() => document.getElementById('tours-section')?.scrollIntoView({behavior: 'smooth'})}>Check Availability</Button>
+                        </div>
+                    </div>
+                    <Section id="tours-section" className="bg-white">
+                        <SectionTitle subtitle="Slow travel through Alentejo's heritage">Our Culinary Experiences</SectionTitle>
+                        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                            {TOURS.map((tour) => (
+                                <div key={tour.id} className="bg-cream rounded-3xl overflow-hidden shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 group flex flex-col">
+                                    <div className="relative h-64 overflow-hidden shrink-0 cursor-pointer" onClick={() => onNavigate(tour.page)}>
+                                        <div className="absolute top-4 right-4 bg-terracotta text-white px-4 py-1 rounded-full text-sm font-bold z-10 shadow-lg">Founding Price</div>
+                                        <img src={tour.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    </div>
+                                    <div className="p-8 flex flex-col flex-grow">
+                                        <h3 className="font-serif text-2xl text-olive mb-2 cursor-pointer hover:underline decoration-terracotta" onClick={() => onNavigate(tour.page)}>{tour.title}</h3>
+                                        <p className="text-terracotta italic text-sm mb-4">{tour.tagline}</p>
+                                        <div className="flex items-center gap-2 text-sm text-gray-500 font-medium mb-4"><span>⏰ {tour.time}</span><span>•</span><span>{tour.duration}</span></div>
+                                        <div className="bg-white rounded-xl p-4 border-2 border-gold/30 text-center mb-6">
+                                            <div className="flex items-center justify-center gap-3"><span className="text-3xl font-serif font-bold text-terracotta">€{tour.price}</span><span className="text-lg text-gray-400 line-through">€{tour.regularPrice}</span></div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 mt-auto">
+                                            {/* CHANGED: On Click now goes to Detail page instead of immediate booking to force calendar selection */}
+                                            <Button onClick={() => onNavigate(tour.page)} className="!px-2">Book Now</Button>
+                                            <Button variant="outline" onClick={() => onNavigate(tour.page)} className="!px-2">Details</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Section>
+                </>
+            );
+        };
+
+        const TourDetails = ({ onNavigate, onBook, tourId }) => {
+            const tour = TOURS.find(t => t.id === tourId);
+            const isEvening = tourId === 'evening';
+            const [selectedDate, setSelectedDate] = useState(null);
+            const [guests, setGuests] = useState(1);
+            const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+            const bookingWidgetRef = useRef(null);
+            const topRef = useRef(null);
+            
+            useEffect(() => {
+                if (topRef.current) topRef.current.scrollIntoView({ behavior: 'auto' });
+            }, [tourId]);
+
+            // Handle booking deep link from Home
+            useEffect(() => {
+                if (window.location.hash === '#book') {
+                    if (window.innerWidth < 1024) {
+                        setIsMobileDrawerOpen(true);
+                    } else if (bookingWidgetRef.current) {
+                        bookingWidgetRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }, []);
+
+            const totalPrice = tour.price * guests;
+
+            const BookingForm = () => (
+                <div className="flex flex-col gap-6">
+                    <div className="border-b border-gray-100 pb-4">
+                        <h3 className="font-serif text-2xl text-charcoal font-bold">Book your spot</h3>
+                        <p className="text-sm text-gray-500">Instant confirmation via Email</p>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-olive uppercase tracking-wide mb-3 flex justify-between">
+                            <span>Select Date</span>
+                            {selectedDate && <span className="text-terracotta">{selectedDate.toLocaleDateString()}</span>}
+                        </label>
+                        <Calendar selectedDate={selectedDate} onDateSelect={setSelectedDate} />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-olive uppercase tracking-wide mb-2">Guests</label>
+                        <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200">
+                            <span className="text-sm font-medium text-gray-600">Adults (€{tour.price})</span>
+                            <div className="flex items-center gap-4">
+                                <button onClick={() => setGuests(Math.max(1, guests-1))} className="w-8 h-8 rounded-full bg-white border border-gray-300 text-gray-600 flex items-center justify-center hover:border-terracotta hover:text-terracotta transition-colors">-</button>
+                                <span className="font-bold text-lg w-4 text-center">{guests}</span>
+                                <button onClick={() => setGuests(Math.min(12, guests+1))} className="w-8 h-8 rounded-full bg-white border border-gray-300 text-gray-600 flex items-center justify-center hover:border-terracotta hover:text-terracotta transition-colors">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-2 pt-4 border-t border-gray-100">
+                        <div className="flex justify-between items-end mb-4">
+                            <span className="text-sm text-gray-500 font-medium">Total</span>
+                            <div className="text-right">
+                                <span className="text-3xl font-serif font-bold text-terracotta">€{totalPrice}</span>
+                            </div>
+                        </div>
+
+                        <Button 
+                            fullWidth 
+                            onClick={() => onBook(tour.id, selectedDate, tour.time, guests)} 
+                            disabled={!selectedDate} 
+                            className={!selectedDate ? 'opacity-50 cursor-not-allowed bg-gray-300 shadow-none' : 'py-4 text-lg shadow-xl hover:-translate-y-1 bg-[#25D366] hover:bg-[#128C7E] border-transparent'}
+                        >
+                            {selectedDate ? 'Request via WhatsApp' : 'Choose a Date'}
+                        </Button>
+                        <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
+                            Direct booking with our team
+                        </p>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="pt-20 bg-white" ref={topRef}>
+                    <SEO title={`${tour.title} | Alentejo Bites`} />
+                    <div className="bg-cream border-b border-gray-100 pt-16 pb-12">
+                         <div className="max-w-6xl mx-auto px-4">
+                            <h1 className="font-serif text-3xl md:text-5xl text-charcoal font-bold">{tour.title}</h1>
+                            <p className="text-xl text-gray-500 italic font-serif">{tour.tagline}</p>
+                        </div>
+                    </div>
+                    <Section className="!py-12">
+                        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 relative">
+                            <div className="lg:col-span-8 pb-20">
+                                <img src={tour.image} className="w-full h-80 md:h-[450px] object-cover rounded-xl shadow-md mb-10" />
+                                <div className="prose prose-lg text-gray-600 max-w-none">
+                                    <h3 className="font-serif text-2xl text-olive mb-4">The Experience</h3>
+                                    <p className="leading-loose mb-8">{tour.description}</p>
+                                    
+                                    <h3 className="font-serif text-2xl text-olive mb-6">Culinary Highlights</h3>
+                                    <div className="bg-cream rounded-xl p-8 border-l-4 border-terracotta space-y-8">
+                                         <div><h4 className="font-bold text-terracotta text-lg">Authentic Tastings</h4><p className="text-sm">We visit 4-5 different locations, from historic taverns to modern artisan spots.</p></div>
+                                         <div><h4 className="font-bold text-terracotta text-lg">Wine Pairing</h4><p className="text-sm">Includes generous tastings of Alentejo wines (red, white, and sometimes sparkling).</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="lg:col-span-4 relative hidden lg:block">
+                                <div ref={bookingWidgetRef} className="sticky top-28 bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 z-30">
+                                    <BookingForm />
+                                </div>
+                            </div>
+                        </div>
+                    </Section>
+
+                     {/* Mobile Sticky Footer */}
+                    <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.1)] flex items-center justify-between safe-area-bottom">
+                         <div className="flex flex-col">
+                             <span className="text-xs text-gray-500 uppercase tracking-wide">Total</span>
+                             <span className="font-serif font-bold text-2xl text-terracotta">€{totalPrice}</span>
+                         </div>
+                         <Button onClick={() => setIsMobileDrawerOpen(true)} className="!px-8 shadow-lg">
+                             {selectedDate ? 'Continue' : 'Check Availability'}
+                         </Button>
+                    </div>
+
+                    <Drawer isOpen={isMobileDrawerOpen} onClose={() => setIsMobileDrawerOpen(false)}>
+                        <BookingForm />
+                    </Drawer>
+                </div>
+            );
+        };
+
+        const AboutPage = () => (
+            <div className="pt-24 bg-white min-h-screen">
+                <Section>
+                    <SectionTitle>About Us</SectionTitle>
+                    <p className="text-center text-gray-600 max-w-2xl mx-auto">We are locals sharing the best of Évora's food and wine.</p>
+                </Section>
+            </div>
+        );
+
+        const ContactPage = () => (
+            <div className="pt-24 bg-cream min-h-screen">
+                <Section>
+                    <SectionTitle>Contact</SectionTitle>
+                    <p className="text-center">alentejobites@gmail.com</p>
+                </Section>
+            </div>
+        );
+
+        const BlogPage = ({ onNavigate, initialPostId }) => {
+            const [viewingPostId, setViewingPostId] = useState(initialPostId);
+            useEffect(() => { if (initialPostId) setViewingPostId(initialPostId); }, [initialPostId]);
+
+            if (viewingPostId) {
+                const post = BLOG_POSTS.find(p => p.id === viewingPostId);
+                return (
+                    <div className="pt-24 bg-white min-h-screen">
+                        <div className="max-w-4xl mx-auto px-6 py-12">
+                            <button onClick={() => setViewingPostId(null)} className="mb-8 text-terracotta hover:underline">← Back</button>
+                            <h1 className="font-serif text-4xl text-charcoal mb-6">{post.title}</h1>
+                            <img src={post.image} className="w-full h-80 object-cover rounded-xl mb-8" />
+                            <p className="text-xl italic mb-6">{post.excerpt}</p>
+                        </div>
+                    </div>
+                );
+            }
+            return (
+                <div className="pt-24 bg-cream min-h-screen">
+                    <Section>
+                        <SectionTitle>Journal</SectionTitle>
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {BLOG_POSTS.map(post => (
+                                <div key={post.id} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer" onClick={() => setViewingPostId(post.id)}>
+                                    <div className="h-48 overflow-hidden"><img src={post.image} className="w-full h-full object-cover group-hover:scale-105" /></div>
+                                    <div className="p-6"><h3 className="font-serif text-xl text-olive mb-2">{post.title}</h3></div>
+                                </div>
+                            ))}
+                        </div>
+                    </Section>
+                </div>
+            );
+        };
+
+        const TextPage = ({ title, children }) => (
+            <div className="pt-24 bg-white min-h-screen"><Section><h1 className="font-serif text-4xl text-olive mb-8 border-b pb-4">{title}</h1><div className="prose">{children}</div></Section></div>
+        );
+
+        // --- APP ---
+
+        const App = () => {
+            const [currentPage, setCurrentPage] = useState(Page.HOME);
+            const [activeModal, setActiveModal] = useState(null);
+            const [selectedBlogPostId, setSelectedBlogPostId] = useState(null);
+
+            useEffect(() => window.scrollTo(0, 0), [currentPage]);
+
+            // --- THE MAGIC LOGIC FOR STRIPE & MAKE ---
+            const handleBooking = (tourId, date, time, guests) => {
+                const tour = TOURS.find(t => t.id === tourId);
+                if (tour) {
+                    
+                    // Logic to generate the ID for Make/Supabase
+                    if (date && time && guests) {
+                        const dateStr = date.toISOString().split('T')[0];
+                        // REMOVE COLONS FROM TIME (e.g. 17:00 -> 1700) TO FIX STRIPE LINK
+                        let rawStartTime = time.split(' - ')[0].trim();
+                        const timeStr = rawStartTime.replace(/[^a-zA-Z0-9]/g, '');
+                        
+                        // ID FORMAT: evening_2026-05-20_1700_2
+                        const refId = `${tourId}_${dateStr}_${timeStr}_${guests}`;
+                        
+                        const totalPrice = tour.price * guests;
+
+                        // Construct WhatsApp Message
+                        const message = `Ola! I would like to request a booking:
+                        
+Tour: ${tour.title}
+Date: ${date.toLocaleDateString()}
+Time: ${time}
+Guests: ${guests}
+Total Price: €${totalPrice}
+
+Reference ID: ${refId}
+(Waiting for payment link)`;
+
+                        const whatsappUrl = `https://wa.me/351925464464?text=${encodeURIComponent(message)}`;
+
+                        console.log("🚀 OPENING WHATSAPP:", whatsappUrl);
+                        
+                        // Open WhatsApp in new tab
+                        window.open(whatsappUrl, '_blank');
+                    } else {
+                        console.error("Missing date/time/guests for booking. Cannot generate ID.");
+                    }
+                }
+            };
+
+            const renderPage = () => {
+                switch (currentPage) {
+                    case Page.HOME: return <Home onNavigate={setCurrentPage} onBook={() => handleBooking('evening')} onBlogClick={(id) => { setSelectedBlogPostId(id); setCurrentPage(Page.BLOG); }} />;
+                    case Page.EVENING_TOUR: return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="evening" />;
+                    case Page.BRUNCH_TOUR: return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="brunch" />;
+                    case Page.ABOUT: return <AboutPage />;
+                    case Page.CONTACT: return <ContactPage />;
+                    case Page.BLOG: return <BlogPage onNavigate={setCurrentPage} initialPostId={selectedBlogPostId} />;
+                    case Page.TERMS: return <TextPage title="Terms">Terms...</TextPage>;
+                    case Page.CANCELLATION: return <TextPage title="Cancellation">Cancellation...</TextPage>;
+                    default: return <Home onNavigate={setCurrentPage} onBook={handleBooking} />;
+                }
+            };
+
+            return (
+                <Layout activePage={currentPage} onNavigate={setCurrentPage} onBookClick={() => setActiveModal('booking')}>
+                    {renderPage()}
+                    <Modal isOpen={activeModal === 'booking'} onClose={() => setActiveModal(null)} title="Choose Your Experience">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {TOURS.map(tour => (
+                                <div key={tour.id} className="border rounded-xl overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => { setActiveModal(null); setCurrentPage(tour.page); }}>
+                                    <img src={tour.image} className="h-32 w-full object-cover" />
+                                    <div className="p-4">
+                                        <h3 className="font-serif font-bold text-olive">{tour.title}</h3>
+                                        <Button fullWidth className="!py-2 !text-sm mt-2" onClick={(e) => { e.stopPropagation(); setCurrentPage(tour.page); }}>Check Details</Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Modal>
+                </Layout>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
