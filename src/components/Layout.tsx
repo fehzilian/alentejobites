@@ -14,6 +14,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [logoSrc, setLogoSrc] = useState('/logo.png');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +22,49 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const image = new Image();
+    image.src = '/logo.png';
+
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) return;
+
+      ctx.drawImage(image, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+
+      const threshold = 245;
+      const featherStart = 225;
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        const r = pixels[i];
+        const g = pixels[i + 1];
+        const b = pixels[i + 2];
+        const a = pixels[i + 3];
+        const minChannel = Math.min(r, g, b);
+
+        if (minChannel >= threshold) {
+          pixels[i + 3] = 0;
+        } else if (minChannel >= featherStart) {
+          const t = (threshold - minChannel) / (threshold - featherStart);
+          pixels[i + 3] = Math.round(a * Math.max(0, Math.min(1, t)));
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      setLogoSrc(canvas.toDataURL('image/png'));
+    };
+
+    image.onerror = () => {
+      setImgError(true);
+    };
   }, []);
 
   const handleNavClick = (item: { label: string, page: Page }) => {
@@ -69,25 +113,22 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
             className="cursor-pointer transition-transform hover:scale-105"
             onClick={handleLogoClick}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center">
                 {/* Logo Image - Requires logo.png in the same folder */}
                 {imgError ? (
                     <div className={`${logoSize} rounded-full bg-gradient-to-br from-gold to-terracotta flex items-center justify-center text-white font-bold text-xs shadow-lg`}>
                         AB
                     </div>
                 ) : (
-                    <img 
-                        src="logo.png" 
-                        alt="Alentejo Bites" 
-                        className={`${logoSize} object-contain transition-all duration-300 drop-shadow-md`}
-                        onError={() => setImgError(true)}
-                    />
+                    <div className={`${logoSize} rounded-full overflow-hidden transition-all duration-300 drop-shadow-md`}>
+                      <img 
+                          src={logoSrc} 
+                          alt="Alentejo Bites" 
+                          className="h-full w-full object-cover"
+                          onError={() => setImgError(true)}
+                      />
+                    </div>
                 )}
-                
-                {/* Text Label */}
-                <span className={`font-serif font-bold text-xl md:text-2xl tracking-wide transition-colors ${!isScrolled && activePage === Page.HOME ? 'text-white drop-shadow-md' : 'text-olive'}`}>
-                    Alentejo<span className="text-terracotta">.</span>Bites
-                </span>
             </div>
           </div>
 
@@ -153,13 +194,14 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div>
                 {/* Footer Logo */}
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center mb-4">
                     {imgError ? (
                         <div className="h-12 w-12 rounded-full bg-gradient-to-br from-gold to-terracotta flex items-center justify-center text-white font-bold text-[10px]">AB</div>
                     ) : (
-                        <img src="logo.png" alt="Logo" className="h-14 w-auto object-contain" />
+                        <div className="h-14 w-14 rounded-full overflow-hidden">
+                          <img src={logoSrc} alt="Logo" className="h-full w-full object-cover" />
+                        </div>
                     )}
-                     <span className="font-serif text-xl text-gold">Alentejo Bites</span>
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed mb-6">
                     Évora's first and only dedicated walking food tour. Small groups, expert guides, authentic experiences.

@@ -14,6 +14,9 @@ const forbiddenMarkers = [
   'diff --git a/index.html b/index.html',
   '*** Begin Patch',
   '*** End Patch',
+  '<<<<<<<',
+  '=======',
+  '>>>>>>>',
 ];
 
 const marker = forbiddenMarkers.find((item) => html.includes(item));
