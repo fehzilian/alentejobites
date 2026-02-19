@@ -127,6 +127,86 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
     setGalleryIndex((prev) => (prev - 1 + experienceGallery.length) % experienceGallery.length);
   };
 
+  const heroStats = isEvening
+    ? [
+        { label: 'Duration', value: '3 hours' },
+        { label: 'Distance', value: 'Easy 1.5 km walk' },
+        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
+        { label: 'Start Time', value: tour.time },
+      ]
+    : [
+        { label: 'Duration', value: '3 hours' },
+        { label: 'Distance', value: 'Easy 1.3 km walk' },
+        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
+        { label: 'Start Time', value: tour.time },
+      ];
+
+  const storyIntro = isEvening
+    ? [
+        'The Évora Evening Bites is for travelers who want more than a classic sightseeing walk — combining Évora’s history with the food and wine locals truly enjoy. You’ll walk through Évora’s UNESCO historic center at golden hour, stopping at family-run venues and tasting the dishes residents often order after work.',
+        'Along the way, your guide connects every bite to Alentejo traditions — from regional cheeses and cured meats to tavern culture, local wines, and conventual sweets. The experience follows the Alentejo spirit of vagar: relaxed, welcoming, and meant to be savored slowly.',
+        'This evening walk includes 4 delicious tasting stops, each offering a true flavor of Évora and the Alentejo way of life.',
+      ]
+    : [
+        'The Évora Brunch Bites is a relaxed morning food walk that combines sweet bakery flavors, regional tastings, and a traditional brunch-style lunch in the heart of Évora.',
+        'Throughout the experience, you’ll enjoy fresh pastries and coffee, sample Alentejo cheeses, and classic local bites.',
+        'Set within Évora’s UNESCO-listed historic center, this tour offers a satisfying taste of Alentejo cuisine from morning to midday, with 4 carefully selected stops meant to be enjoyed at a comfortable pace.',
+      ];
+
+  const quickSummary = isEvening
+    ? [
+        { title: '1st Stop – Historic Bakery & Regional Sweets', description: 'Begin your morning at a traditional bakery, enjoying three iconic regional pastries, served with coffee or your preferred drink.' },
+        { title: '2nd Stop – Bifana & Vinho Verde', description: 'Taste the famous Portuguese bifana, paired with a refreshing glass of Vinho Verde.' },
+        { title: '3rd Stop – Cheese, Cured Meats & Enchidos', description: 'Enjoy a tasting of regional cheeses and charcuterie, served with local wine.' },
+        { title: '4th Stop – Traditional Plates & Sweet Finish', description: 'End the experience with two warm Alentejo dishes, a drink, and a regional dessert to complete your brunch the Évora way.' },
+      ]
+    : [
+        { title: '1st Stop – Historic Bakery & Regional Sweets', description: 'Begin with three traditional pastries in a beloved local bakery, served with coffee or another drink.' },
+        { title: '2nd Stop – Bifana & Vinho Verde', description: 'Enjoy the famous Portuguese bifana, paired with a light glass of Vinho Verde.' },
+        { title: '3rd Stop – Regional Tasting Board', description: 'Sample a selection of regional cheese and charcuterie, served with local wine.' },
+        { title: '4th Stop – Traditional Plates & Dessert', description: 'Finish with two regional dishes, a drink, and a sweet local dessert to complete your Évora brunch experience.' },
+      ];
+
+  const inclusions = isEvening
+    ? ['7+ tastings across savory and sweet stops', '4 carefully paired drinks (wine + local pours)', 'Local guide and cultural storytelling', 'Small-group format for a more personal pace']
+    : ['6+ tastings focused on morning flavors', 'Coffee and non-alcoholic pairings', 'Market walk with product insights', 'Local guide and practical food recommendations'];
+
+  const notIncluded = ['Hotel pickup/drop-off', 'Extra drinks beyond the tasting menu', 'Gratuities (optional)'];
+
+  const experienceGallery = isEvening
+    ? [
+        'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1529692236671-f1de44ff8a9a?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=900&h=700&fit=crop',
+      ]
+    : [
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1513267048331-5611cad62e41?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1464306076886-da185f6a9d05?w=900&h=700&fit=crop',
+      ];
+
+  const nextGalleryImage = () => {
+    setGalleryIndex((prev) => (prev + 1) % experienceGallery.length);
+  };
+
+  const previousGalleryImage = () => {
+    setGalleryIndex((prev) => (prev - 1 + experienceGallery.length) % experienceGallery.length);
+  };
+
   useEffect(() => {
     topRef.current?.scrollIntoView({ behavior: 'auto' });
     setGalleryIndex(0);
