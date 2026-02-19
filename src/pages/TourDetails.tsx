@@ -9,7 +9,7 @@ import { supabase } from '../lib/supabase.ts';
 
 interface TourDetailsProps {
   onNavigate: (page: Page) => void;
-  onBook: (tourId: string, date?: Date, time?: string, guests?: number) => void;
+  onBook: (tourId: string, date?: Date, time?: string, guests?: number) => Promise<void> | void;
   tourId: 'evening' | 'brunch';
 }
 
@@ -31,6 +31,50 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
   const isEvening = tourId === 'evening';
   const hasBadges = tour.badges && tour.badges.length > 0;
+
+  const heroStats = isEvening
+    ? [
+        { label: 'Duration', value: '3.5 hours' },
+        { label: 'Distance', value: 'Easy 1.5 km walk' },
+        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
+        { label: 'Start Time', value: tour.time },
+      ]
+    : [
+        { label: 'Duration', value: '3 hours' },
+        { label: 'Distance', value: 'Easy 1.3 km walk' },
+        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
+        { label: 'Start Time', value: tour.time },
+      ];
+
+  const storyIntro = isEvening
+    ? [
+        'The Évora Evening Bites is designed for travelers who want more than a typical tasting. You will walk through the historic center at golden hour, stop at local family-run venues, and taste the dishes locals actually order after work.',
+        'Along the way, your guide connects every bite to Alentejo traditions, from cured meats and tavern culture to regional wines and convent sweets. It is social, relaxed, and paced so you can enjoy every stop without rushing.',
+      ]
+    : [
+        'The Morning Bites is a slower, brighter way to discover Évora. You will start with classic café culture, continue through market life, and experience how locals build flavor into everyday breakfast and lunch tables.',
+        'This route combines fresh produce, bakery traditions, and olive oil heritage with stories about neighborhood life. It is ideal if you prefer daytime tours and want a rich food experience before the afternoon heat.',
+      ];
+
+  const quickSummary = isEvening
+    ? [
+        { title: 'The Alentejo Welcome', description: 'Porco Preto presunto, aged sheep cheese, and a crisp white from nearby vineyards.' },
+        { title: 'The Portuguese Classic', description: 'A proper bifana paired with sparkling Vinho Verde in a laid-back local spot.' },
+        { title: 'The Tavern Table', description: 'Seasonal petiscos shared family-style with a structured Alentejo red wine.' },
+        { title: 'Sweet & Digestif Finale', description: 'Traditional convent dessert and local digestif to close the evening.' },
+      ]
+    : [
+        { title: 'Historic Café Rituals', description: 'Coffee culture and pastries served in beloved morning meeting points.' },
+        { title: 'Municipal Market Walk', description: 'Fresh produce, olives, cheeses, and conversations with local vendors.' },
+        { title: 'Bread & Olive Oil Tasting', description: 'Artisan bread with premium olive oil and regional seasoning traditions.' },
+        { title: 'Morning Signature Bite', description: 'A savory local specialty that ties together the morning food identity.' },
+      ];
+
+  const inclusions = isEvening
+    ? ['7+ tastings across savory and sweet stops', '4 carefully paired drinks (wine + local pours)', 'Local guide and cultural storytelling', 'Small-group format for a more personal pace']
+    : ['6+ tastings focused on morning flavors', 'Coffee and non-alcoholic pairings', 'Market walk with product insights', 'Local guide and practical food recommendations'];
+
+  const notIncluded = ['Hotel pickup/drop-off', 'Extra drinks beyond the tasting menu', 'Gratuities (optional)'];
 
   useEffect(() => {
     topRef.current?.scrollIntoView({ behavior: 'auto' });
@@ -91,7 +135,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
       title: "The Évora Evening Bites | Dinner Walking Experience",
       desc: "Join a relaxed evening walking food tour in Évora with presunto, bifana, petiscos, dessert, and Alentejo wines."
   } : {
-      title: "The Brunch Bites | Morning Market & Food Walk",
+      title: "The Morning Bites | Morning Market & Food Walk",
       desc: "Explore Évora in the morning with coffee, pastries, market tastings, olive oil, and regional bites."
   };
 
@@ -174,11 +218,11 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                     }
                 `}
             >
-                {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Request via WhatsApp') : 'Choose a Date')}
+                {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Choose a Date')}
             </Button>
             
             <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                Direct booking with our team
+                Secure payment via Stripe. Spots are reserved immediately.
             </p>
         </div>
     </div>
@@ -201,8 +245,16 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                             ))}
                         </div>
                     )}
-                    <h1 className="font-serif text-3xl md:text-5xl text-charcoal font-bold">{tour.title}</h1>
-                    <p className="text-xl text-gray-500 italic font-serif">{tour.tagline}</p>
+                    <h1 className="font-serif text-4xl md:text-6xl text-charcoal font-bold leading-tight">{tour.title}</h1>
+                    <p className="text-2xl text-gray-500 italic font-serif">{tour.tagline}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+                        {heroStats.map((stat) => (
+                            <div key={stat.label} className="bg-white/90 border border-olive/10 rounded-lg px-4 py-3">
+                                <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">{stat.label}</p>
+                                <p className="text-sm md:text-base text-charcoal font-semibold">{stat.value}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
@@ -230,33 +282,55 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                         <div className="flex items-center gap-1"><span>👟</span> 1.5km</div>
                     </div>
 
-                    <div className="prose prose-lg text-gray-600 max-w-none">
-                        <h3 className="font-serif text-2xl text-olive mb-4">The Experience</h3>
-                        <p className="leading-loose mb-8">
-                           {tour.description}
-                        </p>
+                    <div className="text-gray-700 max-w-none space-y-10">
+                        <div>
+                            <h3 className="font-serif text-3xl md:text-4xl text-olive mb-5">The Experience</h3>
+                            <div className="space-y-5 text-lg leading-8">
+                                {storyIntro.map((paragraph) => (
+                                    <p key={paragraph}>{paragraph}</p>
+                                ))}
+                            </div>
+                        </div>
 
-                        <h3 className="font-serif text-2xl text-olive mb-6">Culinary Highlights</h3>
-                        <div className="bg-cream rounded-xl p-8 border-l-4 border-terracotta space-y-8">
-                            {isEvening ? (
-                                <>
-                                    <div><h4 className="font-bold text-terracotta text-lg">The Alentejo Welcome</h4><p className="text-sm">Porco Preto presunto & aged sheep cheese with Alentejo white wine.</p></div>
-                                    <div><h4 className="font-bold text-terracotta text-lg">The Portuguese Classic</h4><p className="text-sm">Traditional bifana sandwich with sparkling Vinho Verde.</p></div>
-                                    <div><h4 className="font-bold text-terracotta text-lg">The Tavern Experience</h4><p className="text-sm">Three warm seasonal petiscos with bold Alentejo red wine.</p></div>
-                                    <div><h4 className="font-bold text-terracotta text-lg">The Sweet Finale</h4><p className="text-sm">Regional delicacies and a conventual dessert with local liqueur.</p></div>
-                                </>
-                            ) : (
-                                <>
-                                    <div><h4 className="font-bold text-terracotta text-lg">Historic Cafés</h4><p className="text-sm">Visit historic spots for coffee and pastries.</p></div>
-                                    <div><h4 className="font-bold text-terracotta text-lg">Municipal Market</h4><p className="text-sm">Taste seasonal fruits, olives, and local products.</p></div>
-                                    <div><h4 className="font-bold text-terracotta text-lg">Artisan Bread & Olive Oil</h4><p className="text-sm">Fresh artisanal bread and olive oil tasting experience.</p></div>
-                                </>
-                            )}
+                        <div className="bg-white border border-gray-200 rounded-xl p-7">
+                            <h3 className="font-serif text-3xl text-olive mb-4">Quick Summary</h3>
+                            <ul className="space-y-4">
+                                {quickSummary.map((item, index) => (
+                                    <li key={item.title} className="flex gap-3 text-base leading-7">
+                                        <span className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-terracotta text-white text-xs font-bold">
+                                            {index + 1}
+                                        </span>
+                                        <div>
+                                            <h4 className="font-bold text-terracotta text-lg md:text-xl mb-1">{item.title}</h4>
+                                            <p className="text-[17px] leading-7">{item.description}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-5">
+                            <div className="rounded-xl border border-olive/20 bg-olive/5 p-6">
+                                <h3 className="font-serif text-2xl text-olive mb-3">What&apos;s Included</h3>
+                                <ul className="space-y-2 text-base leading-7">
+                                    {inclusions.map((item) => (
+                                        <li key={item} className="flex gap-2"><span className="text-terracotta">✓</span><span>{item}</span></li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
+                                <h3 className="font-serif text-2xl text-olive mb-3">Not Included</h3>
+                                <ul className="space-y-2 text-base leading-7 text-gray-700">
+                                    {notIncluded.map((item) => (
+                                        <li key={item} className="flex gap-2"><span className="text-gray-400">•</span><span>{item}</span></li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
 
                         <div className="mt-10 bg-yellow-50 p-6 rounded-lg border border-gold/40">
-                             <h4 className="font-bold text-olive mb-2">🌱 Dietary Accommodations</h4>
-                             <p className="text-sm">Vegetarian? Gluten-Free? Food Allergies? We can adapt most tastings with advance notice.</p>
+                             <h4 className="font-bold text-olive mb-2 text-lg">🌱 Dietary Accommodations</h4>
+                             <p className="text-base leading-7">Vegetarian? Gluten-Free? Food allergies? We can adapt most tastings with advance notice when you book.</p>
                         </div>
                     </div>
                 </div>

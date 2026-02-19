@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Page } from '../types.ts';
 import { BLOG_POSTS, TOURS } from '../data.tsx';
 import { Button, Section, SectionTitle } from '../components/UI.tsx';
@@ -77,6 +77,27 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
+  const [heroVideoSrc, setHeroVideoSrc] = useState('/home-hero.mp4');
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+
+    if (!video) {
+      return;
+    }
+
+    video.defaultMuted = true;
+    video.muted = true;
+    video.loop = true;
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        // Autoplay can be blocked by browser policies; keep component stable.
+      });
+    }
+  }, [heroVideoSrc]);
   
   const faqs = [
     {
@@ -147,17 +168,25 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
 
       {/* Hero Section */}
       <div className="relative h-[95vh] w-full overflow-hidden flex items-center justify-center text-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-olive/80 to-charcoal/60 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-olive/55 to-charcoal/40 z-10" />
         <video 
+          ref={heroVideoRef}
           autoPlay 
           muted 
           loop 
           playsInline 
+          preload="metadata"
+          onError={() => {
+            if (heroVideoSrc !== 'https://cdn.coverr.co/videos/coverr-tourists-walking-around-the-city-9477/1080p.mp4') {
+              setHeroVideoSrc('https://cdn.coverr.co/videos/coverr-tourists-walking-around-the-city-9477/1080p.mp4');
+            }
+          }}
           className="absolute inset-0 w-full h-full object-cover z-0"
         >
-             <source src="https://storage.coverr.co/videos/coverr-tourists-walking-around-the-city-9477/1080p60?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6Ijg3NjdFMzIzRjlGQzEzN0E4QTAyIiwiaWF0IjoxNjM5NTc3OTkyfQ.P7vK_jPWxZJjMw0H8Uw-wPSYuKEXDhc0W5vDJPsZuKY" type="video/mp4" />
+             <source src={heroVideoSrc} type="video/mp4" />
         </video>
-        
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-olive/30 to-terracotta/70 z-10" />
+
         <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
           <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn">
             Évora 2027 — European Capital of Culture
@@ -181,12 +210,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       </div>
 
       {/* Launch Banner */}
-      <div className="bg-gradient-to-r from-terracotta to-olive text-white py-12 px-6">
+      <div className="bg-gradient-to-b from-terracotta/90 via-terracotta to-olive text-white py-12 px-6">
         <div className="max-w-4xl mx-auto text-center">
             <h3 className="font-serif text-3xl font-bold mb-3">Launch Offer (Founding Member Price)</h3>
             <p className="mb-6 opacity-90">Book now and enjoy our special launch pricing — the same full experience, for less.</p>
             <div className="inline-block bg-white/20 border-2 border-white/40 px-6 py-3 rounded-full font-bold text-lg backdrop-blur-sm">
-                🍷 Evening Bites €59 (Reg €69) | ☕ Brunch Bites €49 (Reg €59)
+                🍷 Evening Bites €59 (Reg €69) | ☕ Morning Bites €49 (Reg €59)
             </div>
             <p className="mt-4 text-sm opacity-75">⏳ Launch pricing ends March 31, 2026</p>
         </div>
@@ -372,18 +401,23 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
             {/* Trusted Platforms */}
             <div className="text-center max-w-4xl mx-auto">
                 <h4 className="font-serif text-2xl text-gray-600 mb-8">Trusted by Travelers</h4>
-                <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16">
-                    {/* TripAdvisor */}
-                    <div className="group cursor-pointer transition-all duration-300 opacity-60 hover:opacity-100 grayscale hover:grayscale-0 hover:scale-105">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/TripAdvisor_Logo.svg" alt="TripAdvisor" className="h-10 w-auto"/>
+                <div className="relative max-w-3xl mx-auto">
+                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 opacity-60">
+                        {/* TripAdvisor */}
+                        <div className="group cursor-pointer transition-all duration-300 grayscale hover:grayscale-0 hover:scale-105">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/TripAdvisor_Logo.svg" alt="TripAdvisor" className="h-10 w-auto"/>
+                        </div>
+                        {/* GetYourGuide */}
+                        <div className="group cursor-pointer transition-all duration-300 grayscale hover:grayscale-0 hover:scale-105">
+                        <img src="https://www.vhv.rs/dpng/d/611-6116095_getyourguide-logo-logo-get-your-guide-hd-png.png" alt="GetYourGuide" className="h-12 w-auto object-contain"/>
+                        </div>
+                        {/* Airbnb */}
+                        <div className="group cursor-pointer transition-all duration-300 grayscale hover:grayscale-0 hover:scale-105">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg" alt="Airbnb" className="h-9 w-auto"/>
+                        </div>
                     </div>
-                    {/* GetYourGuide */}
-                    <div className="group cursor-pointer transition-all duration-300 opacity-60 hover:opacity-100 grayscale hover:grayscale-0 hover:scale-105">
-                    <img src="https://www.vhv.rs/dpng/d/611-6116095_getyourguide-logo-logo-get-your-guide-hd-png.png" alt="GetYourGuide" className="h-12 w-auto object-contain"/>
-                    </div>
-                    {/* Airbnb */}
-                    <div className="group cursor-pointer transition-all duration-300 opacity-60 hover:opacity-100 grayscale hover:grayscale-0 hover:scale-105">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg" alt="Airbnb" className="h-9 w-auto"/>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="px-5 py-2 rounded-full border border-white/60 bg-charcoal/45 backdrop-blur-sm text-white text-xs md:text-sm tracking-[0.2em] uppercase font-semibold">Under Implementation</span>
                     </div>
                 </div>
             </div>
