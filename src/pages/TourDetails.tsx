@@ -9,7 +9,7 @@ import { supabase } from '../lib/supabase.ts';
 
 interface TourDetailsProps {
   onNavigate: (page: Page) => void;
-  onBook: (tourId: string, date?: Date, time?: string, guests?: number) => void;
+  onBook: (tourId: string, date?: Date, time?: string, guests?: number) => Promise<void> | void;
   tourId: 'evening' | 'brunch';
 }
 
@@ -174,11 +174,11 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                     }
                 `}
             >
-                {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Request via WhatsApp') : 'Choose a Date')}
+                {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Choose a Date')}
             </Button>
             
             <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                Direct booking with our team
+                Secure payment via Stripe. Spots are reserved immediately.
             </p>
         </div>
     </div>
