@@ -10,9 +10,56 @@ import { SEO } from './components/SEO.tsx';
 import { supabase } from './lib/supabase.ts';
 
 const App: React.FC = () => {
+  const PAGE_PATHS: Record<Page, string> = {
+    [Page.HOME]: '/',
+    [Page.ABOUT]: '/about',
+    [Page.EVENING_TOUR]: '/tours/evening-bites',
+    [Page.BRUNCH_TOUR]: '/tours/morning-bites',
+    [Page.PRIVATE]: '/private-tours',
+    [Page.TRANSFER]: '/transfer',
+    [Page.CORPORATE]: '/corporate',
+    [Page.CONTACT]: '/contact',
+    [Page.TERMS]: '/terms',
+    [Page.CANCELLATION]: '/cancellation',
+    [Page.COMPLAINTS]: '/complaints',
+    [Page.BLOG]: '/blog',
+  };
+
+  const getPageFromPath = (pathname: string): Page => {
+    const normalizedPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
+    const foundEntry = Object.entries(PAGE_PATHS).find(([, path]) => path === normalizedPath);
+    return (foundEntry?.[0] as Page) || Page.HOME;
+  };
+
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [selectedBlogPostId, setSelectedBlogPostId] = useState<number | null>(null);
+
+  const navigateTo = (page: Page, options?: { replace?: boolean }) => {
+    setCurrentPage(page);
+    const targetPath = PAGE_PATHS[page] || '/';
+    const currentPath = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+    if (currentPath !== targetPath) {
+      if (options?.replace) {
+        window.history.replaceState({}, '', targetPath);
+      } else {
+        window.history.pushState({}, '', targetPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const initialPage = getPageFromPath(window.location.pathname);
+    setCurrentPage(initialPage);
+
+    const handlePopState = () => {
+      setCurrentPage(getPageFromPath(window.location.pathname));
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -60,7 +107,7 @@ const App: React.FC = () => {
   };
 
   const handleNavigateToBooking = (tourId: string, tourPage: Page) => {
-      setCurrentPage(tourPage);
+      navigateTo(tourPage);
       // Wait for page render then scroll
       setTimeout(() => {
           window.location.hash = '#book';
@@ -71,15 +118,15 @@ const App: React.FC = () => {
   const handleBlogNavigation = (postId?: number) => {
       if (postId) setSelectedBlogPostId(postId);
       else setSelectedBlogPostId(null);
-      setCurrentPage(Page.BLOG);
+      navigateTo(Page.BLOG);
   };
 
   const renderPage = () => {
     switch (currentPage) {
       case Page.HOME:
         return (
-            <Home 
-                onNavigate={setCurrentPage} 
+                <Home 
+                onNavigate={navigateTo} 
                 onBook={(tourId) => {
                      const tour = TOURS.find(t => t.id === tourId);
                      if(tour) handleNavigateToBooking(tourId, tour.page);
@@ -88,26 +135,26 @@ const App: React.FC = () => {
             />
         );
       case Page.EVENING_TOUR:
-        return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="evening" />;
+        return <TourDetails onNavigate={navigateTo} onBook={handleBooking} tourId="evening" />;
       case Page.BRUNCH_TOUR:
-        return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="brunch" />;
+        return <TourDetails onNavigate={navigateTo} onBook={handleBooking} tourId="brunch" />;
       case Page.ABOUT:
-        return <AboutPage onNavigate={setCurrentPage} onBlogClick={handleBlogNavigation} />;
+        return <AboutPage onNavigate={navigateTo} onBlogClick={handleBlogNavigation} />;
       case Page.CONTACT:
         return <ContactPage />;
       case Page.BLOG:
-        return <BlogPage onNavigate={setCurrentPage} initialPostId={selectedBlogPostId} />;
+        return <BlogPage onNavigate={navigateTo} initialPostId={selectedBlogPostId} />;
       case Page.TERMS: return <TermsPage />;
       case Page.CANCELLATION: return <CancellationPage />;
       case Page.COMPLAINTS: return <TextPage title="Complaints"><p>Redirecting to Complaints Book...</p></TextPage>;
-      default: return <Home onNavigate={setCurrentPage} onBook={handleBooking} />;
+      default: return <Home onNavigate={navigateTo} onBook={handleBooking} />;
     }
   };
 
   return (
     <Layout 
         activePage={currentPage} 
-        onNavigate={setCurrentPage} 
+        onNavigate={navigateTo} 
         onBookClick={() => setActiveModal('booking_selection')}
     >
       {renderPage()}

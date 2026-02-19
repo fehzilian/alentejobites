@@ -26,7 +26,7 @@ export const TOURS: Tour[] = [
   },
   {
     id: 'brunch',
-    title: "The Brunch Bites",
+    title: "The Morning Bites",
     tagline: "\"Morning traditions & market flavors\"",
     description: "A relaxed morning walk through Évora’s market culture. Enjoy coffee and pastries in historic cafés, tastings at Évora’s municipal market, and fresh artisan bread with olive oil experiences.",
     price: 49,
