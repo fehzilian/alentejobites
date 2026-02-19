@@ -1,36 +1,41 @@
 import React from 'react';
 import { Page, Tour, BlogPost } from './types.ts';
 
+const eveningCheckoutUrl =
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_EVENING || 'https://example.com/checkout/evening';
+const brunchCheckoutUrl =
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_BRUNCH || 'https://example.com/checkout/brunch';
+
 // --- TOURS DATA ---
 export const TOURS: Tour[] = [
   {
     id: 'evening',
     title: "The Évora Evening Bites",
-    tagline: "\"Where every bite tells Évora’s story\"",
-    description: "A guided walking dinner through Évora’s UNESCO historic center. Experience Premium Porco Preto presunto, the famous bifana, warm seasonal petiscos in a local tavern, and a conventual dessert finale — all paired with excellent Alentejo wines.",
+    tagline: "“Discover Évora, one bite at a time”",
+    description: "Explore Évora by night on a relaxed walking dinner tour, tasting local cheeses, cured hams, bifana, traditional Alentejo plates, and a sweet convent dessert — all paired with regional wines.",
     price: 59,
     regularPrice: 69,
     image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     time: "5:00 PM - 8:00 PM", // Updated to full range
     duration: "3 Hours",
     page: Page.EVENING_TOUR,
-    checkoutUrl: "https://example.com/checkout/evening",
+    checkoutUrl: eveningCheckoutUrl,
     badges: ["Most Popular"],
     flexibleSchedule: true,
     maxCapacity: 12
   },
   {
     id: 'brunch',
-    title: "The Brunch Bites",
+    title: "The Morning Bites",
     tagline: "\"Morning traditions & market flavors\"",
-    description: "A relaxed morning walk through Évora’s market culture. Enjoy coffee and pastries in historic cafés, tastings at Évora’s municipal market, and fresh artisan bread with olive oil experiences.",
+    description: "Start your day in Évora with a guided food & wine brunch walk, tasting local pastries, bifana, regional cheeses, traditional Alentejo plates, and a dessert finale — all at a comfortable pace.",
     price: 49,
     regularPrice: 59,
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     time: "10:00 AM - 1:00 PM", // Updated to full range
     duration: "3 Hours",
     page: Page.BRUNCH_TOUR,
-    checkoutUrl: "https://example.com/checkout/brunch",
+    checkoutUrl: brunchCheckoutUrl,
     flexibleSchedule: true,
     maxCapacity: 10
   }
@@ -40,20 +45,97 @@ export const TOURS: Tour[] = [
 export const BLOG_POSTS: BlogPost[] = [
     {
         id: 1,
-        title: "5 Secret Wine Spots in Alentejo",
-        excerpt: "Forget the big commercial wineries. Here’s where the locals go to drink talha wine straight from the clay pot.",
+        title: "Discover the Dishes of Évora That Helped Alentejo Rank 9th in the World",
+        excerpt: "When TasteAtlas ranked Alentejo as the 9th best food region in the world, it recognized centuries of resilience, tradition, and extraordinary flavors rooted in Évora.",
         content: (
             <>
-                <p className="mb-4">Alentejo is famous for its vast vineyards, but the real magic happens in the small adegas.</p>
-                <p className="mb-4">In this guide, we take you off the beaten path to discover <strong>Vinho de Talha</strong>, an ancient Roman tradition of making wine in large clay pots that has survived in Alentejo for over 2,000 years.</p>
-                <h3 className="text-2xl font-serif text-olive my-6">1. Adega do Mestre</h3>
-                <p className="mb-4">Located in a tiny village, this spot offers... (Full article content would go here).</p>
+                <p className="mb-4">When TasteAtlas ranked Alentejo as the 9th best food region in the world, it wasn’t by accident. The region’s cuisine is deeply rooted in history, shaped by resilience, and built on simple ingredients transformed into extraordinary flavors.</p>
+                <p className="mb-4">Évora, the heart of Alentejo, holds some of the most iconic dishes that helped define this global recognition. These recipes were not born in luxury kitchens — they were created by farmers, shepherds, and working families who turned scarcity into tradition.</p>
+                <p className="mb-6">Let’s explore the dishes that tell the real story of Alentejo.</p>
+
+                <h3 className="text-2xl font-serif text-olive my-6">1. Sopa Alentejana – From Poverty to Culinary Pride</h3>
+                <p className="mb-4">Few dishes represent Alentejo better than Sopa Alentejana.</p>
+                <p className="mb-4">This humble soup was born from necessity. In a region historically marked by agricultural labor and economic hardship, rural families had to stretch ingredients as far as possible. Bread — especially the dense, rustic Alentejo bread — became the foundation of many meals.</p>
+                <p className="mb-4">Instead of wasting stale bread, people transformed it into sustenance.</p>
+                <figure className="my-6">
+                    <img
+                        src="https://lh3.googleusercontent.com/gps-cs-s/AHVAwer2gV8iABU_FkllwuhBgcuREy5bDrVXSBwFZmmaEAozFjQ3kk2bVXFcucGMnEfngpl-Irm2EP4am9Av8KoTCCBwnvY7zFQYLRcdbKO3Ik5KFKrPipaEs2q-UQFqwJU9vzBUGq5UznvyJHPh=s1360-w1360-h1020-rw"
+                        alt="Traditional Sopa Alentejana served in Évora"
+                        className="w-full rounded-xl object-cover shadow-md"
+                    />
+                    <figcaption className="mt-2 text-sm text-gray-500">
+                        📸 Traditional Sopa Alentejana served in Évora. Photo courtesy of Restaurante Fialho Évora.
+                    </figcaption>
+                </figure>
+                <h4 className="text-xl font-serif text-charcoal mt-6 mb-3">A Dish of the Working Class</h4>
+                <p className="mb-4">The origins of Sopa Alentejana are deeply tied to the lives of rural workers. Field laborers needed something nourishing yet simple. With access to olive oil, garlic, coriander, eggs, and water, they created a dish that was both filling and comforting.</p>
+                <p className="mb-4">It was a poor man’s meal — but rich in flavor.</p>
+                <h4 className="text-xl font-serif text-charcoal mt-6 mb-3">Key Ingredients</h4>
+                <ul className="list-disc pl-6 mb-6 space-y-1">
+                    <li>Day-old Alentejo bread</li>
+                    <li>Garlic</li>
+                    <li>Fresh coriander</li>
+                    <li>Olive oil</li>
+                    <li>Poached egg</li>
+                    <li>Water and salt</li>
+                </ul>
+                <p className="mb-6">Today, what was once survival food is served in traditional restaurants and fine dining spaces alike. It embodies the essence of Alentejo: simplicity elevated to excellence.</p>
+
+                <h3 className="text-2xl font-serif text-olive my-6">2. Carne de Porco à Alentejana – A Fusion of Land and Sea</h3>
+                <p className="mb-4">One of Portugal’s most famous dishes, Carne de Porco à Alentejana, is surprisingly not coastal — yet it includes clams.</p>
+                <p className="mb-4">The pork is marinated for hours in white wine, garlic, paprika, bay leaf, olive oil, salt, and pepper before being cooked and paired with fresh clams.</p>
+                <figure className="my-6">
+                    <img
+                        src="https://lh3.googleusercontent.com/gps-cs-s/AHVAwerUUjM5NfKXGNe1enh-vgpwFHS9teHoiZ5R8s8PGA2wnwd5BVQvF-L4hI7zA09xf9hPQhOWiDVjTFXUokfOqbqebbI2mONdsih58A6FUkqXguIEfI6GuIYyiLejDmJLxqV1Vdg3=s1360-w1360-h1020-rw"
+                        alt="Traditional Carne de porco Alentejana served in Évora"
+                        className="w-full rounded-xl object-cover shadow-md"
+                    />
+                    <figcaption className="mt-2 text-sm text-gray-500">
+                        📸 Traditional Carne de porco Alentejana served in Évora. Photo courtesy of Restaurante Adega da Talha Velha.
+                    </figcaption>
+                </figure>
+                <p className="mb-6">Served with fried potatoes and fresh coriander, it became one of the most emblematic dishes of Alentejo cuisine.</p>
+
+                <h3 className="text-2xl font-serif text-olive my-6">3. Vendas Novas and the Birth of the Bifana</h3>
+                <p className="mb-4">Just outside Évora, the town of Vendas Novas became famous as the birthplace of one of Portugal’s most beloved sandwiches: the Bifana de Vendas Novas.</p>
+                <p className="mb-4">In the 1960s, taverns started serving marinated pork sandwiches to travelers between Lisbon and Alentejo. The wine-and-garlic marinade links to older Iberian and colonial culinary influences, including the historic "vinha d’alhos" technique.</p>
+                <figure className="my-6">
+                    <img
+                        src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/22/5e/62/5a/vai-uma-bifana.jpg?w=900&h=500&s=1"
+                        alt="Traditional Bifanas served in Vendas"
+                        className="w-full rounded-xl object-cover shadow-md"
+                    />
+                    <figcaption className="mt-2 text-sm text-gray-500">
+                        📸 Traditional Bifanas served in Vendas. Photo courtesy of Restaurante Bifanas &amp; Companhia
+                    </figcaption>
+                </figure>
+                <p className="mb-6">Today, this bifana is considered one of the best in Portugal and draws food lovers from all over the country.</p>
+
+                <h3 className="text-2xl font-serif text-olive my-6">4. Azevia – The Sweet Tradition of Alentejo</h3>
+                <p className="mb-4">To finish, we turn to dessert: the Azevia, a traditional fried pastry often filled with chickpea paste, pumpkin jam, almond, sugar, and cinnamon.</p>
+                <figure className="my-6">
+                    <img
+                        src="https://tradicional.dgadr.gov.pt/images/prod_imagens/doces/azevia.jpg"
+                        alt="Produtos Tradicionais Portugueses — Azevia"
+                        className="w-full rounded-xl object-cover shadow-md"
+                    />
+                    <figcaption className="mt-2 text-sm text-gray-500">
+                        📸 Traditional Azevia from Alentejo. Photo courtesy of DGADR Traditional Portuguese Products.
+                    </figcaption>
+                </figure>
+                <p className="mb-6">Crispy on the outside and delicately sweet inside, azevias are a living symbol of Alentejo’s conventual dessert heritage.</p>
+
+                <h3 className="text-2xl font-serif text-olive my-6">The Flavors That Define a World-Class Region</h3>
+                <p className="mb-4">Alentejo’s global ranking is the result of centuries of tradition — not trends. Sopa Alentejana speaks of resilience, Carne de Porco à Alentejana of cultural exchange, the bifana of Vendas Novas of local ingenuity, and azevias of sweet conventual legacy.</p>
+                <p className="mb-4">These dishes are more than recipes — they are living memories of a land shaped by agriculture, migration, and time.</p>
+                <p className="mb-4">To understand why Alentejo is one of the world’s top food regions, you don’t just read about it — you sit at the table, break bread, and taste the stories passed down through generations.</p>
+                <p>Because in Évora, food isn’t just nourishment. It is heritage.</p>
             </>
         ),
-        author: "Felippe Santos",
-        date: "Jan 12, 2026",
-        category: "Wine & Drink",
-        image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&h=600&fit=crop"
+        author: "Alentejo Bites Team",
+        date: "Feb 19, 2026",
+        category: "Food Culture",
+        image: "https://www.bioarmonia.gr/images/Awards2025/Taste-Atlas-2025.png"
     },
     {
         id: 101, // Guide Profile Maria
