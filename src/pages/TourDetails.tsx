@@ -21,6 +21,8 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [guests, setGuests] = useState(1);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [activeInfoTab, setActiveInfoTab] = useState<'summary' | 'included' | 'notIncluded' | 'dietary'>('summary');
+  const [galleryIndex, setGalleryIndex] = useState(0);
   
   // Real Data State
   const [availability, setAvailability] = useState<Record<string, number>>({});
@@ -34,7 +36,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
   const heroStats = isEvening
     ? [
-        { label: 'Duration', value: '3.5 hours' },
+        { label: 'Duration', value: '3 hours' },
         { label: 'Distance', value: 'Easy 1.5 km walk' },
         { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
         { label: 'Start Time', value: tour.time },
@@ -48,26 +50,28 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
   const storyIntro = isEvening
     ? [
-        'The Évora Evening Bites is designed for travelers who want more than a typical tasting. You will walk through the historic center at golden hour, stop at local family-run venues, and taste the dishes locals actually order after work.',
-        'Along the way, your guide connects every bite to Alentejo traditions, from cured meats and tavern culture to regional wines and convent sweets. It is social, relaxed, and paced so you can enjoy every stop without rushing.',
+        'The Évora Evening Bites is for travelers who want more than a classic sightseeing walk — combining Évora’s history with the food and wine locals truly enjoy. You’ll walk through Évora’s UNESCO historic center at golden hour, stopping at family-run venues and tasting the dishes residents often order after work.',
+        'Along the way, your guide connects every bite to Alentejo traditions — from regional cheeses and cured meats to tavern culture, local wines, and conventual sweets. The experience follows the Alentejo spirit of vagar: relaxed, welcoming, and meant to be savored slowly.',
+        'This evening walk includes 4 delicious tasting stops, each offering a true flavor of Évora and the Alentejo way of life.',
       ]
     : [
-        'The Morning Bites is a slower, brighter way to discover Évora. You will start with classic café culture, continue through market life, and experience how locals build flavor into everyday breakfast and lunch tables.',
-        'This route combines fresh produce, bakery traditions, and olive oil heritage with stories about neighborhood life. It is ideal if you prefer daytime tours and want a rich food experience before the afternoon heat.',
+        'The Évora Brunch Bites is a relaxed morning food walk that combines sweet bakery flavors, regional tastings, and a traditional brunch-style lunch in the heart of Évora.',
+        'Throughout the experience, you’ll enjoy fresh pastries and coffee, sample Alentejo cheeses, and classic local bites.',
+        'Set within Évora’s UNESCO-listed historic center, this tour offers a satisfying taste of Alentejo cuisine from morning to midday, with 4 carefully selected stops meant to be enjoyed at a comfortable pace.',
       ];
 
   const quickSummary = isEvening
     ? [
-        { title: 'The Alentejo Welcome', description: 'Porco Preto presunto, aged sheep cheese, and a crisp white from nearby vineyards.' },
-        { title: 'The Portuguese Classic', description: 'A proper bifana paired with sparkling Vinho Verde in a laid-back local spot.' },
-        { title: 'The Tavern Table', description: 'Seasonal petiscos shared family-style with a structured Alentejo red wine.' },
-        { title: 'Sweet & Digestif Finale', description: 'Traditional convent dessert and local digestif to close the evening.' },
+        { title: '1st Stop – Historic Bakery & Regional Sweets', description: 'Begin your morning at a traditional bakery, enjoying three iconic regional pastries, served with coffee or your preferred drink.' },
+        { title: '2nd Stop – Bifana & Vinho Verde', description: 'Taste the famous Portuguese bifana, paired with a refreshing glass of Vinho Verde.' },
+        { title: '3rd Stop – Cheese, Cured Meats & Enchidos', description: 'Enjoy a tasting of regional cheeses and charcuterie, served with local wine.' },
+        { title: '4th Stop – Traditional Plates & Sweet Finish', description: 'End the experience with two warm Alentejo dishes, a drink, and a regional dessert to complete your brunch the Évora way.' },
       ]
     : [
-        { title: 'Historic Café Rituals', description: 'Coffee culture and pastries served in beloved morning meeting points.' },
-        { title: 'Municipal Market Walk', description: 'Fresh produce, olives, cheeses, and conversations with local vendors.' },
-        { title: 'Bread & Olive Oil Tasting', description: 'Artisan bread with premium olive oil and regional seasoning traditions.' },
-        { title: 'Morning Signature Bite', description: 'A savory local specialty that ties together the morning food identity.' },
+        { title: '1st Stop – Historic Bakery & Regional Sweets', description: 'Begin with three traditional pastries in a beloved local bakery, served with coffee or another drink.' },
+        { title: '2nd Stop – Bifana & Vinho Verde', description: 'Enjoy the famous Portuguese bifana, paired with a light glass of Vinho Verde.' },
+        { title: '3rd Stop – Regional Tasting Board', description: 'Sample a selection of regional cheese and charcuterie, served with local wine.' },
+        { title: '4th Stop – Traditional Plates & Dessert', description: 'Finish with two regional dishes, a drink, and a sweet local dessert to complete your Évora brunch experience.' },
       ];
 
   const inclusions = isEvening
@@ -76,8 +80,43 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
   const notIncluded = ['Hotel pickup/drop-off', 'Extra drinks beyond the tasting menu', 'Gratuities (optional)'];
 
+  const experienceGallery = isEvening
+    ? [
+        'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1529692236671-f1de44ff8a9a?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=900&h=700&fit=crop',
+      ]
+    : [
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1513267048331-5611cad62e41?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1464306076886-da185f6a9d05?w=900&h=700&fit=crop',
+      ];
+
+  const nextGalleryImage = () => {
+    setGalleryIndex((prev) => (prev + 1) % experienceGallery.length);
+  };
+
+  const previousGalleryImage = () => {
+    setGalleryIndex((prev) => (prev - 1 + experienceGallery.length) % experienceGallery.length);
+  };
+
   useEffect(() => {
     topRef.current?.scrollIntoView({ behavior: 'auto' });
+    setGalleryIndex(0);
   }, [tourId]);
 
   // --- FETCH REAL AVAILABILITY ---
@@ -221,8 +260,11 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Choose a Date')}
             </Button>
             
-            <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                Secure payment via Stripe. Spots are reserved immediately.
+            <p className="text-[11px] text-gray-500 text-center mt-3 flex items-center justify-center gap-2">
+                <span className="inline-flex items-center rounded-md border border-[#635BFF]/20 bg-[#635BFF]/10 px-2 py-0.5 text-[#635BFF] font-semibold tracking-wide">
+                  stripe
+                </span>
+                <span>Secure payment. Spots are reserved immediately.</span>
             </p>
         </div>
     </div>
@@ -292,45 +334,94 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                             </div>
                         </div>
 
-                        <div className="bg-white border border-gray-200 rounded-xl p-7">
-                            <h3 className="font-serif text-3xl text-olive mb-4">Quick Summary</h3>
-                            <ul className="space-y-4">
-                                {quickSummary.map((item, index) => (
-                                    <li key={item.title} className="flex gap-3 text-base leading-7">
-                                        <span className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-terracotta text-white text-xs font-bold">
-                                            {index + 1}
-                                        </span>
-                                        <div>
-                                            <h4 className="font-bold text-terracotta text-lg md:text-xl mb-1">{item.title}</h4>
-                                            <p className="text-[17px] leading-7">{item.description}</p>
-                                        </div>
-                                    </li>
+                        <div className="rounded-xl border border-olive/20 bg-white shadow-sm overflow-hidden">
+                            <div className="flex flex-wrap gap-2 px-3 py-3 bg-cream/70 border-b border-olive/10">
+                                <button onClick={() => setActiveInfoTab('summary')} className={`px-3 py-1 text-xs rounded-full transition-colors ${activeInfoTab === 'summary' ? 'bg-olive text-white' : 'bg-white text-olive border border-olive/20'}`}>Quick Summary</button>
+                                <button onClick={() => setActiveInfoTab('included')} className={`px-3 py-1 text-xs rounded-full transition-colors ${activeInfoTab === 'included' ? 'bg-olive text-white' : 'bg-white text-olive border border-olive/20'}`}>What&apos;s Included</button>
+                                <button onClick={() => setActiveInfoTab('notIncluded')} className={`px-3 py-1 text-xs rounded-full transition-colors ${activeInfoTab === 'notIncluded' ? 'bg-olive text-white' : 'bg-white text-olive border border-olive/20'}`}>Not Included</button>
+                                <button onClick={() => setActiveInfoTab('dietary')} className={`px-3 py-1 text-xs rounded-full transition-colors ${activeInfoTab === 'dietary' ? 'bg-olive text-white' : 'bg-white text-olive border border-olive/20'}`}>Dietary</button>
+                            </div>
+
+                            <div className="p-4 md:p-5">
+                                {activeInfoTab === 'summary' && (
+                                    <div>
+                                        <h3 className="font-serif text-xl text-olive mb-3">The 4 Stops</h3>
+                                        <ul className="space-y-2.5">
+                                            {quickSummary.map((item, index) => (
+                                                <li key={item.title} className="flex gap-2.5 text-sm leading-6">
+                                                    <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-terracotta text-white text-[10px] font-bold">{index + 1}</span>
+                                                    <div>
+                                                        <h4 className="font-bold text-terracotta text-sm md:text-base mb-0.5">{item.title}</h4>
+                                                        <p className="text-xs md:text-sm leading-5 text-gray-700">{item.description}</p>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {activeInfoTab === 'included' && (
+                                    <div>
+                                        <h3 className="font-serif text-xl text-olive mb-2">What&apos;s Included</h3>
+                                        <ul className="space-y-1.5 text-xs md:text-sm leading-6">
+                                            {inclusions.map((item) => (
+                                                <li key={item} className="flex gap-2"><span className="text-terracotta">✓</span><span>{item}</span></li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {activeInfoTab === 'notIncluded' && (
+                                    <div>
+                                        <h3 className="font-serif text-xl text-olive mb-2">Not Included</h3>
+                                        <ul className="space-y-1.5 text-xs md:text-sm leading-6 text-gray-700">
+                                            {notIncluded.map((item) => (
+                                                <li key={item} className="flex gap-2"><span className="text-gray-400">•</span><span>{item}</span></li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {activeInfoTab === 'dietary' && (
+                                    <div className="bg-yellow-50 p-3 rounded-lg border border-gold/40">
+                                        <h4 className="font-bold text-olive mb-1 text-sm">🌱 Dietary Accommodations</h4>
+                                        <p className="text-xs md:text-sm leading-6">Vegetarian? Gluten-Free? Food allergies? We can adapt most tastings with advance notice when you book.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <h4 className="font-serif text-xl text-olive">Experience Gallery</h4>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={previousGalleryImage} className="h-8 w-8 rounded-full border border-olive/20 text-olive hover:bg-olive hover:text-white transition-colors">‹</button>
+                                    <button onClick={nextGalleryImage} className="h-8 w-8 rounded-full border border-olive/20 text-olive hover:bg-olive hover:text-white transition-colors">›</button>
+                                </div>
+                            </div>
+
+                            <div className="relative overflow-hidden rounded-xl border border-gray-100 shadow-sm bg-black/5">
+                                <img
+                                  src={experienceGallery[galleryIndex]}
+                                  alt={`Experience moment ${galleryIndex + 1}`}
+                                  className="w-full h-[360px] md:h-[430px] object-cover transition-all duration-500"
+                                />
+                                <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/55 to-transparent text-white text-xs md:text-sm">
+                                    Photo {galleryIndex + 1} of {experienceGallery.length}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
+                                {experienceGallery.map((image, index) => (
+                                    <button
+                                      key={image}
+                                      onClick={() => setGalleryIndex(index)}
+                                      className={`overflow-hidden rounded-md border ${galleryIndex === index ? 'border-terracotta ring-1 ring-terracotta/40' : 'border-gray-200'}`}
+                                    >
+                                      <img src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-12 md:h-14 object-cover" />
+                                    </button>
                                 ))}
-                            </ul>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-5">
-                            <div className="rounded-xl border border-olive/20 bg-olive/5 p-6">
-                                <h3 className="font-serif text-2xl text-olive mb-3">What&apos;s Included</h3>
-                                <ul className="space-y-2 text-base leading-7">
-                                    {inclusions.map((item) => (
-                                        <li key={item} className="flex gap-2"><span className="text-terracotta">✓</span><span>{item}</span></li>
-                                    ))}
-                                </ul>
                             </div>
-                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-                                <h3 className="font-serif text-2xl text-olive mb-3">Not Included</h3>
-                                <ul className="space-y-2 text-base leading-7 text-gray-700">
-                                    {notIncluded.map((item) => (
-                                        <li key={item} className="flex gap-2"><span className="text-gray-400">•</span><span>{item}</span></li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="mt-10 bg-yellow-50 p-6 rounded-lg border border-gold/40">
-                             <h4 className="font-bold text-olive mb-2 text-lg">🌱 Dietary Accommodations</h4>
-                             <p className="text-base leading-7">Vegetarian? Gluten-Free? Food allergies? We can adapt most tastings with advance notice when you book.</p>
                         </div>
                     </div>
                 </div>

@@ -78,6 +78,7 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
   const [heroVideoSrc, setHeroVideoSrc] = useState('/home-hero.mp4');
+  const [showLaunchBanner, setShowLaunchBanner] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -98,6 +99,23 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       });
     }
   }, [heroVideoSrc]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowLaunchBanner(window.scrollY > Math.max(220, window.innerHeight * 0.35));
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleCapitalCultureClick = () => {
+    if (onBlogClick) {
+      onBlogClick(2);
+    }
+    onNavigate(Page.BLOG);
+  };
   
   const faqs = [
     {
@@ -167,7 +185,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       />
 
       {/* Hero Section */}
-      <div className="relative h-[95vh] w-full overflow-hidden flex items-center justify-center text-center">
+      <div className="relative h-screen w-full overflow-hidden flex items-center justify-center text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-olive/55 to-charcoal/40 z-10" />
         <video 
           ref={heroVideoRef}
@@ -188,9 +206,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-olive/30 to-terracotta/70 z-10" />
 
         <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
-          <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn">
+          <button
+            onClick={handleCapitalCultureClick}
+            className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn hover:bg-white/30 transition-colors"
+          >
             Évora 2027 — European Capital of Culture
-          </div>
+          </button>
           <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 leading-tight drop-shadow-lg">
             Évora Walking Food & Wine Experiences
           </h1>
@@ -210,7 +231,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       </div>
 
       {/* Launch Banner */}
-      <div className="bg-gradient-to-b from-terracotta/90 via-terracotta to-olive text-white py-12 px-6">
+      <div className={`bg-gradient-to-b from-terracotta/90 via-terracotta to-olive text-white py-12 px-6 transition-all duration-700 ${showLaunchBanner ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}`}>
         <div className="max-w-4xl mx-auto text-center">
             <h3 className="font-serif text-3xl font-bold mb-3">Launch Offer (Founding Member Price)</h3>
             <p className="mb-6 opacity-90">Book now and enjoy our special launch pricing — the same full experience, for less.</p>

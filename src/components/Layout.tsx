@@ -212,9 +212,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
                         <div className="text-[10px] text-gold uppercase font-bold leading-tight">Turismo de Portugal</div>
                         <div className="text-[8px] text-gray-400">RNAAT 123/2026</div>
                     </div>
-                     <div className="bg-white/10 p-2 rounded text-center w-20">
-                        <div className="text-[10px] text-green-400 uppercase font-bold leading-tight">Clean & Safe</div>
-                        <div className="text-[8px] text-gray-400">Certified</div>
+                    <div className="bg-white p-1 rounded-lg w-44 shadow-sm">
+                        <img
+                            src="/clean-safe.svg"
+                            alt="Clean & Safe Certificate"
+                            className="w-full h-auto rounded"
+                        />
                     </div>
                 </div>
             </div>
@@ -251,6 +254,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
         <div className="max-w-7xl mx-auto border-t border-gray-700 pt-8 text-center text-gray-500 text-xs">
             <p>© 2026 Alentejo Bites. All rights reserved.</p>
             <p>Registered Tourism Company in Portugal | RNAAT No 1234/2026</p>
+            <p>NIF: PT301201196</p>
         </div>
       </footer>
     </div>
