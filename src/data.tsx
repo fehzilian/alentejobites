@@ -1,36 +1,41 @@
 import React from 'react';
 import { Page, Tour, BlogPost } from './types.ts';
 
+const eveningCheckoutUrl =
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_EVENING || 'https://example.com/checkout/evening';
+const brunchCheckoutUrl =
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_BRUNCH || 'https://example.com/checkout/brunch';
+
 // --- TOURS DATA ---
 export const TOURS: Tour[] = [
   {
     id: 'evening',
     title: "The Évora Evening Bites",
-    tagline: "\"Where every bite tells Évora’s story\"",
-    description: "A guided walking dinner through Évora’s UNESCO historic center. Experience Premium Porco Preto presunto, the famous bifana, warm seasonal petiscos in a local tavern, and a conventual dessert finale — all paired with excellent Alentejo wines.",
+    tagline: "“Discover Évora, one bite at a time”",
+    description: "Explore Évora by night on a relaxed walking dinner tour, tasting local cheeses, cured hams, bifana, traditional Alentejo plates, and a sweet convent dessert — all paired with regional wines.",
     price: 59,
     regularPrice: 69,
     image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     time: "5:00 PM - 8:00 PM", // Updated to full range
     duration: "3 Hours",
     page: Page.EVENING_TOUR,
-    checkoutUrl: "https://example.com/checkout/evening",
+    checkoutUrl: eveningCheckoutUrl,
     badges: ["Most Popular"],
     flexibleSchedule: true,
     maxCapacity: 12
   },
   {
     id: 'brunch',
-    title: "The Brunch Bites",
+    title: "The Morning Bites",
     tagline: "\"Morning traditions & market flavors\"",
-    description: "A relaxed morning walk through Évora’s market culture. Enjoy coffee and pastries in historic cafés, tastings at Évora’s municipal market, and fresh artisan bread with olive oil experiences.",
+    description: "Start your day in Évora with a guided food & wine brunch walk, tasting local pastries, bifana, regional cheeses, traditional Alentejo plates, and a dessert finale — all at a comfortable pace.",
     price: 49,
     regularPrice: 59,
     image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     time: "10:00 AM - 1:00 PM", // Updated to full range
     duration: "3 Hours",
     page: Page.BRUNCH_TOUR,
-    checkoutUrl: "https://example.com/checkout/brunch",
+    checkoutUrl: brunchCheckoutUrl,
     flexibleSchedule: true,
     maxCapacity: 10
   }
