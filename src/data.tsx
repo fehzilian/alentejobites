@@ -1,6 +1,11 @@
 import React from 'react';
 import { Page, Tour, BlogPost } from './types.ts';
 
+const eveningCheckoutUrl =
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_EVENING || 'https://example.com/checkout/evening';
+const brunchCheckoutUrl =
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_BRUNCH || 'https://example.com/checkout/brunch';
+
 // --- TOURS DATA ---
 export const TOURS: Tour[] = [
   {
@@ -14,7 +19,7 @@ export const TOURS: Tour[] = [
     time: "5:00 PM - 8:00 PM", // Updated to full range
     duration: "3 Hours",
     page: Page.EVENING_TOUR,
-    checkoutUrl: "https://example.com/checkout/evening",
+    checkoutUrl: eveningCheckoutUrl,
     badges: ["Most Popular"],
     flexibleSchedule: true,
     maxCapacity: 12
@@ -30,7 +35,7 @@ export const TOURS: Tour[] = [
     time: "10:00 AM - 1:00 PM", // Updated to full range
     duration: "3 Hours",
     page: Page.BRUNCH_TOUR,
-    checkoutUrl: "https://example.com/checkout/brunch",
+    checkoutUrl: brunchCheckoutUrl,
     flexibleSchedule: true,
     maxCapacity: 10
   }

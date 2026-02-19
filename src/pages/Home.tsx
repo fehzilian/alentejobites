@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Page } from '../types.ts';
 import { BLOG_POSTS, TOURS } from '../data.tsx';
 import { Button, Section, SectionTitle } from '../components/UI.tsx';
@@ -77,6 +77,26 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+
+    if (!video) {
+      return;
+    }
+
+    video.defaultMuted = true;
+    video.muted = true;
+    video.loop = true;
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        // Autoplay can be blocked by browser policies; keep component stable.
+      });
+    }
+  }, []);
   
   const faqs = [
     {
@@ -149,13 +169,15 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       <div className="relative h-[95vh] w-full overflow-hidden flex items-center justify-center text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-olive/80 to-charcoal/60 z-10" />
         <video 
+          ref={heroVideoRef}
           autoPlay 
           muted 
           loop 
           playsInline 
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-cover z-0"
         >
-             <source src="https://storage.coverr.co/videos/coverr-tourists-walking-around-the-city-9477/1080p60?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6Ijg3NjdFMzIzRjlGQzEzN0E4QTAyIiwiaWF0IjoxNjM5NTc3OTkyfQ.P7vK_jPWxZJjMw0H8Uw-wPSYuKEXDhc0W5vDJPsZuKY" type="video/mp4" />
+             <source src="/home-hero.mp4" type="video/mp4" />
         </video>
         
         <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
