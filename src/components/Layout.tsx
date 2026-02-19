@@ -14,7 +14,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [certImgError, setCertImgError] = useState(false);
+  const [certSrc, setCertSrc] = useState('https://www.dgae.gov.pt/upload/SGMEE_5106/imagens/i010730.png');
   const [logoSrc, setLogoSrc] = useState('/logo.png');
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +26,18 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const consent = window.localStorage.getItem('ab_cookie_consent');
+    if (!consent) {
+      setShowCookieBanner(true);
+    }
+  }, []);
+
+  const handleCookieConsent = (choice: 'accepted' | 'essential_only') => {
+    window.localStorage.setItem('ab_cookie_consent', choice);
+    setShowCookieBanner(false);
+  };
 
   useEffect(() => {
     const image = new Image();
@@ -189,6 +204,36 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
         {children}
       </main>
 
+      {showCookieBanner && (
+        <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 md:px-6 md:pb-6">
+          <div className="mx-auto max-w-5xl rounded-2xl border border-olive/20 bg-cream/95 backdrop-blur shadow-2xl p-4 md:p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 className="font-serif text-lg text-olive">Cookie notice</h3>
+                <p className="text-sm text-gray-700 leading-relaxed max-w-3xl">
+                  We use cookies and similar technologies to keep the website working and to measure visits with Google Analytics and Meta Pixel.
+                  You can accept analytics cookies or continue with essential cookies only.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                <button
+                  onClick={() => handleCookieConsent('essential_only')}
+                  className="rounded-lg border border-olive/30 px-3 py-2 text-xs md:text-sm font-semibold text-olive hover:bg-white transition-colors"
+                >
+                  Essential only
+                </button>
+                <button
+                  onClick={() => handleCookieConsent('accepted')}
+                  className="rounded-lg bg-olive px-3 py-2 text-xs md:text-sm font-semibold text-white hover:bg-charcoal transition-colors"
+                >
+                  Accept all cookies
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer className="bg-charcoal text-white pt-16 pb-8 px-6 md:pb-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
@@ -204,7 +249,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
                     )}
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                    Évora's first and only dedicated walking food tour. Small groups, expert guides, authentic experiences.
+                    Évora's first and only dedicated walking food tour. Small groups, local guides, authentic experiences.
                 </p>
                 {/* Trust Badges */}
                 <div className="flex flex-wrap gap-4 mt-6">
@@ -213,11 +258,26 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
                         <div className="text-[8px] text-gray-400">RNAAT 123/2026</div>
                     </div>
                     <div className="bg-white p-1 rounded-lg w-44 shadow-sm">
-                        <img
-                            src="/clean-safe.svg"
-                            alt="Clean & Safe Certificate"
-                            className="w-full h-auto rounded"
-                        />
+                        {certImgError ? (
+                          <div className="w-full rounded bg-emerald-50 border border-emerald-200 px-2 py-3 text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Clean &amp; Safe</p>
+                            <p className="text-[9px] text-emerald-600 mt-0.5">Certified Hygiene Standards</p>
+                          </div>
+                        ) : (
+                          <img
+                              src={certSrc}
+                              alt="Clean & Safe Certificate"
+                              className="w-full h-auto rounded"
+                              loading="lazy"
+                              onError={() => {
+                                if (certSrc === 'https://www.dgae.gov.pt/upload/SGMEE_5106/imagens/i010730.png') {
+                                  setCertSrc('/clean-safe-certificate.svg');
+                                  return;
+                                }
+                                setCertImgError(true);
+                              }}
+                          />
+                        )}
                     </div>
                 </div>
             </div>

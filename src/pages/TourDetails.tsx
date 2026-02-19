@@ -33,6 +33,99 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
   const isEvening = tourId === 'evening';
   const hasBadges = tour.badges && tour.badges.length > 0;
+  const pickupPointLabel = 'Largo do Conde de Vila Flor, 7000-804 Évora';
+  const pickupPointMapUrl = (import.meta as any).env?.VITE_PICKUP_POINT_MAP_URL || 'https://www.google.com/maps/place/Largo+do+Conde+de+Vila+Flor,+7000-804+%C3%89vora/@38.5728787,-7.9087468,19z/data=!3m1!4b1!4m14!1m7!3m6!1s0xd19e4dd098f7a41:0x1a7638f5bfbe7fbd!2sTemplo+Romano+de+%C3%89vora!8m2!3d38.5725904!4d-7.9072944!16s%2Fm%2F03hlk1t!3m5!1s0xd19e4dda07f87b5:0xaddcc9a45a282541!8m2!3d38.5728777!4d-7.9075291!16s%2Fg%2F11c63_x270?entry=ttu&g_ep=EgoyMDI2MDIxNi4wIKXMDSoASAFQAw%3D%3D';
+  const pickupPointEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(pickupPointLabel)}&z=18&output=embed`;
+
+  const heroStats = isEvening
+    ? [
+        { label: 'Duration', value: '3 hours' },
+        { label: 'Distance', value: 'Easy 1.5 km walk' },
+        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
+        { label: 'Start Time', value: tour.time },
+      ]
+    : [
+        { label: 'Duration', value: '3 hours' },
+        { label: 'Distance', value: 'Easy 1.3 km walk' },
+        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
+        { label: 'Start Time', value: tour.time },
+      ];
+
+  const storyIntro = isEvening
+    ? [
+        'The Évora Evening Bites is for travelers who want more than a classic sightseeing walk — combining Évora’s history with the food and wine locals truly enjoy. You’ll walk through Évora’s UNESCO historic center at golden hour, stopping at family-run venues and tasting the dishes residents often order after work.',
+        'Along the way, your guide connects every bite to Alentejo traditions — from regional cheeses and cured meats to tavern culture, local wines, and conventual sweets. The experience follows the Alentejo spirit of vagar: relaxed, welcoming, and meant to be savored slowly.',
+        'This evening walk includes 4 delicious tasting stops, each offering a true flavor of Évora and the Alentejo way of life.',
+      ]
+    : [
+        'The Évora Brunch Bites is a relaxed morning food walk that combines sweet bakery flavors, regional tastings, and a traditional brunch-style lunch in the heart of Évora.',
+        'Throughout the experience, you’ll enjoy fresh pastries and coffee, sample Alentejo cheeses, and classic local bites.',
+        'Set within Évora’s UNESCO-listed historic center, this tour offers a satisfying taste of Alentejo cuisine from morning to midday, with 4 carefully selected stops meant to be enjoyed at a comfortable pace.',
+      ];
+
+  const quickSummary = isEvening
+    ? [
+        { title: '1st Stop – Local tasting & wine introduction', description: 'A welcome tasting of regional cheeses, charcuterie, and an introduction to Alentejo wine culture.' },
+        { title: '2nd Stop – The famous regional sandwich', description: 'Enjoy Évora’s beloved regional bifana sandwich, paired with a refreshing glass of Vinho Verde.' },
+        { title: '3rd Stop – Seasonal Alentejo dishes', description: 'A tasting of two warm traditional dishes, served with a glass of local wine.' },
+        { title: '4th Stop – Final stop in a local tavern', description: 'Enjoy two regional plates, another glass of wine, and a conventual sweet to close the evening in true Alentejo tradition.' },
+      ]
+    : [
+        { title: '1st Stop – Historic Bakery & Regional Sweets', description: 'Begin with three traditional pastries in a beloved local bakery, served with coffee or another drink.' },
+        { title: '2nd Stop – Bifana & Vinho Verde', description: 'Enjoy the famous Portuguese bifana, paired with a light glass of Vinho Verde.' },
+        { title: '3rd Stop – Regional Tasting Board', description: 'Sample a selection of regional cheese and charcuterie, served with local wine.' },
+        { title: '4th Stop – Traditional Plates & Dessert', description: 'Finish with two regional dishes, a drink, and a sweet local dessert to complete your Évora brunch experience.' },
+      ];
+
+  const inclusions = isEvening
+    ? [
+        '9+ curated tastings, from local bites to traditional Alentejo specialties',
+        '4 carefully paired drinks (wine-focused, with beer or non-alcoholic alternatives available)',
+        'Small-group experience for a personal and relaxed pace',
+        'Local guide with cultural storytelling and practical food recommendations',
+      ]
+    : [
+        '8+ tastings focused on morning flavors',
+        'Coffee and non-alcoholic pairings',
+        '3 wine pairings',
+        'Market walk',
+      ];
+
+  const notIncluded = ['Hotel pickup/drop-off', 'Extra drinks beyond the tasting menu', 'Gratuities (optional)'];
+
+  const experienceGallery = isEvening
+    ? [
+        'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1529692236671-f1de44ff8a9a?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=900&h=700&fit=crop',
+      ]
+    : [
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1513267048331-5611cad62e41?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=900&h=700&fit=crop',
+        'https://images.unsplash.com/photo-1464306076886-da185f6a9d05?w=900&h=700&fit=crop',
+      ];
+
+  const nextGalleryImage = () => {
+    setGalleryIndex((prev) => (prev + 1) % experienceGallery.length);
+  };
+
+  const previousGalleryImage = () => {
+    setGalleryIndex((prev) => (prev - 1 + experienceGallery.length) % experienceGallery.length);
+  };
 
   const heroStats = isEvening
     ? [
@@ -266,6 +359,30 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 </span>
                 <span>Secure payment. Spots are reserved immediately.</span>
             </p>
+
+            <a
+              href={pickupPointMapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-olive/20 bg-cream/60 px-3 py-2 text-xs font-semibold text-olive hover:bg-cream transition-colors"
+            >
+              <span>📍</span>
+              <span>Open pickup point in Google Maps ({pickupPointLabel})</span>
+            </a>
+
+
+            <div className="mt-3 overflow-hidden rounded-xl border border-olive/20 bg-white">
+              <div className="px-3 py-2 border-b border-olive/10 bg-cream/50">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-olive">Meeting point mini map</p>
+              </div>
+              <iframe
+                title="Meeting point map"
+                src={pickupPointEmbedUrl}
+                className="w-full h-44"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
         </div>
     </div>
   );
@@ -445,10 +562,16 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                  <span className="font-serif font-bold text-2xl text-terracotta">€{totalPrice}</span>
              </div>
              <Button 
-                onClick={() => setIsMobileDrawerOpen(true)}
+                onClick={() => {
+                  if (selectedDate && getSpotsLeft(selectedDate) > 0) {
+                    onBook(tour.id, selectedDate, tour.time, guests);
+                    return;
+                  }
+                  setIsMobileDrawerOpen(true);
+                }}
                 className="!px-8 shadow-lg"
              >
-                 {selectedDate ? 'Continue' : 'Check Availability'}
+                 {selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Check Availability'}
              </Button>
         </div>
 

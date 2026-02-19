@@ -180,6 +180,8 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
         const post = BLOG_POSTS.find(p => p.id === viewingPostId);
         if (!post) return null;
 
+        const postHeroImage = post.image;
+
         return (
             <div className="pt-24 bg-white min-h-screen">
                  <SEO 
@@ -204,7 +206,13 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                          </div>
                     </div>
 
-                    <img src={post.image} alt={post.title} className="w-full h-[50vh] object-cover rounded-xl shadow-lg mb-12" />
+                    <div className={`w-full rounded-xl shadow-lg mb-12 ${post.id === 1 ? 'bg-cream border border-gold/20 p-8 md:p-10' : ''}`}>
+                        <img
+                            src={postHeroImage}
+                            alt={post.id === 1 ? 'TasteAtlas logo' : post.title}
+                            className={`w-full ${post.id === 1 ? 'h-20 md:h-24 object-contain' : 'h-[50vh] object-cover rounded-xl'}`}
+                        />
+                    </div>
 
                     <div className="prose prose-lg prose-olive mx-auto leading-loose text-gray-600">
                         <p className="text-xl font-serif text-charcoal leading-relaxed mb-8 border-l-4 border-gold pl-6 italic">
@@ -352,13 +360,21 @@ export const ContactPage: React.FC = () => (
                          <p className="text-terracotta font-medium">+351 925 464 464</p>
                     </div>
                 </div>
-                 <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                 <form
+                    className="space-y-4"
+                    action="https://formsubmit.co/alentejobites@gmail.com"
+                    method="POST"
+                  >
+                    <input type="hidden" name="_subject" value="New contact form message - Alentejo Bites" />
+                    <input type="hidden" name="_captcha" value="false" />
+                    <input type="hidden" name="_template" value="table" />
                     <div className="grid md:grid-cols-2 gap-4">
-                        <input type="text" placeholder="Name" className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
-                        <input type="email" placeholder="Email" className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
+                        <input name="name" type="text" placeholder="Name" required className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
+                        <input name="email" type="email" placeholder="Email" required className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
                     </div>
-                    <textarea rows={5} placeholder="Message" className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive"></textarea>
-                    <Button fullWidth>Send Message</Button>
+                    <textarea name="message" rows={5} placeholder="Message" required className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive"></textarea>
+                    <Button fullWidth type="submit">Send Message</Button>
+                    <p className="text-xs text-gray-500 text-center">After clicking send, you'll see a confirmation page and we'll receive your email directly.</p>
                 </form>
             </div>
         </Section>
