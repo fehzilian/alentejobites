@@ -325,8 +325,12 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         <SEO title={seoData.title} description={seoData.desc} />
         
         {/* Header */}
-        <div className="bg-cream border-b border-gray-100 pt-16 pb-12">
-            <div className="max-w-6xl mx-auto px-4 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+        <div className="relative border-b border-gray-100 bg-cream overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-48 md:h-56 overflow-hidden">
+                <img src={tour.image} alt={tour.title} className="w-full h-full object-cover opacity-30" />
+                <div className="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/20 to-cream" />
+            </div>
+            <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-10 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
                 <div className="flex flex-col gap-2 lg:col-span-8">
                     {hasBadges && (
                         <div className="flex gap-2 mb-2">
@@ -338,10 +342,10 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                         </div>
                     )}
                     <h1 className="font-serif text-4xl md:text-6xl text-charcoal font-bold leading-tight">{tour.title}</h1>
-                    <p className="text-2xl text-gray-500 italic font-serif">{tour.tagline}</p>
+                    <p className="text-2xl text-gray-600 italic font-serif">{tour.tagline}</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
                         {heroStats.map((stat) => (
-                            <div key={stat.label} className="bg-white/90 border border-olive/10 rounded-lg px-4 py-3">
+                            <div key={stat.label} className="bg-white/90 border border-olive/10 rounded-lg px-4 py-3 shadow-sm">
                                 <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">{stat.label}</p>
                                 <p className="text-sm md:text-base text-charcoal font-semibold">{stat.value}</p>
                             </div>
@@ -374,8 +378,6 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
                 {/* Main Content (Center) */}
                 <div className="lg:col-span-11 pb-20">
-                    <img src={tour.image} alt={tour.title} className="w-full h-80 md:h-[450px] object-cover rounded-xl shadow-md mb-10" />
-                    
                     {/* Mobile Info Bar */}
                     <div className="md:hidden flex items-center justify-between text-xs font-bold text-gray-500 bg-gray-50 p-4 rounded-lg mb-8 border border-gray-100">
                         <div className="flex items-center gap-1"><span>⏰</span> {tour.time}</div>
