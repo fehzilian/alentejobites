@@ -7,59 +7,143 @@ import { TourDetails } from './pages/TourDetails.tsx';
 import { AboutPage, ContactPage, TextPage, TermsPage, CancellationPage, BlogPage } from './pages/InfoPages.tsx';
 import { Modal, Button } from './components/UI.tsx';
 import { SEO } from './components/SEO.tsx';
+import { supabase } from './lib/supabase.ts';
 
 const App: React.FC = () => {
+  const PAGE_PATHS: Record<Page, string> = {
+    [Page.HOME]: '/',
+    [Page.ABOUT]: '/about',
+    [Page.EVENING_TOUR]: '/tours/evening-bites',
+    [Page.BRUNCH_TOUR]: '/tours/morning-bites',
+    [Page.PRIVATE]: '/private-tours',
+    [Page.TRANSFER]: '/transfer',
+    [Page.CORPORATE]: '/corporate',
+    [Page.CONTACT]: '/contact',
+    [Page.TERMS]: '/terms',
+    [Page.CANCELLATION]: '/cancellation',
+    [Page.COMPLAINTS]: '/complaints',
+    [Page.BLOG]: '/blog',
+  };
+
+  const getPathForPage = (page: Page, blogPostId?: number | null): string => {
+    if (page === Page.BLOG && blogPostId) {
+      return `/blog/${blogPostId}`;
+    }
+    return PAGE_PATHS[page] || '/';
+  };
+
+  const getRouteStateFromPath = (pathname: string): { page: Page; blogPostId: number | null } => {
+    const normalizedPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+    if (normalizedPath.startsWith('/blog/')) {
+      const possibleId = Number(normalizedPath.split('/')[2]);
+      return {
+        page: Page.BLOG,
+        blogPostId: Number.isFinite(possibleId) ? possibleId : null,
+      };
+    }
+
+    const foundEntry = Object.entries(PAGE_PATHS).find(([, path]) => path === normalizedPath);
+    return {
+      page: (foundEntry?.[0] as Page) || Page.HOME,
+      blogPostId: null,
+    };
+  };
+
+  const getPageFromPath = (pathname: string): Page => {
+    return getRouteStateFromPath(pathname).page;
+  };
+
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [selectedBlogPostId, setSelectedBlogPostId] = useState<number | null>(null);
+
+  const navigateTo = (page: Page, options?: { replace?: boolean }) => {
+    const nextBlogPostId = page === Page.BLOG ? selectedBlogPostId : null;
+    if (page !== Page.BLOG && selectedBlogPostId !== null) {
+      setSelectedBlogPostId(null);
+    }
+
+    setCurrentPage(page);
+    const targetPath = getPathForPage(page, nextBlogPostId);
+    const currentPath = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+    if (currentPath !== targetPath) {
+      if (options?.replace) {
+        window.history.replaceState({}, '', targetPath);
+      } else {
+        window.history.pushState({}, '', targetPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const initialRoute = getRouteStateFromPath(window.location.pathname);
+    setCurrentPage(initialRoute.page);
+    setSelectedBlogPostId(initialRoute.blogPostId);
+
+    const handlePopState = () => {
+      const route = getRouteStateFromPath(window.location.pathname);
+      setCurrentPage(route.page);
+      setSelectedBlogPostId(route.blogPostId);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  // Handle Booking: NOW USES WHATSAPP INSTEAD OF STRIPE
-  const handleBooking = (tourId: string, date?: Date, time?: string, guests?: number) => {
+  // Handle Booking: creates a pending reservation and redirects to Stripe checkout
+  const handleBooking = async (tourId: string, date?: Date, time?: string, guests?: number) => {
     const tour = TOURS.find(t => t.id === tourId);
     if (tour) {
-        // If we have date data, construct the WhatsApp message
-        if (date && time && guests) {
-            
-            const dateStr = date.toISOString().split('T')[0];
-            
-            // CLEAN ID GENERATION
-            let rawStartTime = time.split(' - ')[0].trim(); 
-            const timeStr = rawStartTime.replace(/[^a-zA-Z0-9]/g, ''); 
-            
-            // Format: TOURID_YYYY-MM-DD_TIME_GUESTS
-            const refId = `${tourId}_${dateStr}_${timeStr}_${guests}`;
-            const totalPrice = tour.price * guests;
-
-            // Construct WhatsApp Message
-            const message = `Ola! I would like to request a booking:
-            
-Tour: ${tour.title}
-Date: ${date.toLocaleDateString()}
-Time: ${time}
-Guests: ${guests}
-Total Price: €${totalPrice}
-
-Reference ID: ${refId}
-(Waiting for payment link)`;
-
-            const whatsappUrl = `https://wa.me/351925464464?text=${encodeURIComponent(message)}`;
-
-            console.log("🚀 OPENING WHATSAPP:", whatsappUrl);
-            
-            // Open WhatsApp in new tab
-            window.open(whatsappUrl, '_blank');
-        } else {
-             console.warn("Attempted to book without date selection.");
+        if (!tour.checkoutUrl || !/^https?:\/\//i.test(tour.checkoutUrl)) {
+          window.alert('Stripe checkout is not configured yet. Please set VITE_STRIPE_CHECKOUT_EVENING and VITE_STRIPE_CHECKOUT_BRUNCH on Vercel.');
+          return;
         }
+
+        if (!date || !time || !guests) {
+          console.warn('Attempted to book without date selection.');
+          return;
+        }
+
+        const dateStr = date.toISOString().split('T')[0];
+        const rawStartTime = time.split(' - ')[0].trim();
+        const timeStr = rawStartTime.replace(/[^a-zA-Z0-9]/g, '');
+        const reservationRef = `${tourId}_${dateStr}_${timeStr}_${guests}_${Date.now()}`;
+
+        // Create a pending reservation in Supabase so inventory is blocked immediately.
+        // This should later be finalized by a Stripe webhook changing payment_status to "paid".
+        try {
+          await supabase.from('bookings').insert({
+            date: dateStr,
+            tour_id: tourId,
+            guests,
+            payment_status: 'pending',
+            stripe_id: reservationRef,
+          });
+        } catch {
+          // If the insert fails (missing env/db issue), we still let checkout continue.
+        }
+
+        const params = new URLSearchParams({
+          ref: reservationRef,
+          tour: tourId,
+          date: dateStr,
+          time,
+          guests: String(guests),
+        });
+
+        const checkoutUrl = `${tour.checkoutUrl}${tour.checkoutUrl.includes('?') ? '&' : '?'}${params.toString()}`;
+        window.open(checkoutUrl, '_blank');
     }
   };
 
   const handleNavigateToBooking = (tourId: string, tourPage: Page) => {
-      setCurrentPage(tourPage);
+      navigateTo(tourPage);
       // Wait for page render then scroll
       setTimeout(() => {
           window.location.hash = '#book';
@@ -68,17 +152,27 @@ Reference ID: ${refId}
   };
 
   const handleBlogNavigation = (postId?: number) => {
-      if (postId) setSelectedBlogPostId(postId);
-      else setSelectedBlogPostId(null);
-      setCurrentPage(Page.BLOG);
+      if (postId) {
+        setSelectedBlogPostId(postId);
+        setCurrentPage(Page.BLOG);
+        const targetPath = getPathForPage(Page.BLOG, postId);
+        const currentPath = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
+        if (currentPath !== targetPath) {
+          window.history.pushState({}, '', targetPath);
+        }
+        return;
+      }
+
+      setSelectedBlogPostId(null);
+      navigateTo(Page.BLOG);
   };
 
   const renderPage = () => {
     switch (currentPage) {
       case Page.HOME:
         return (
-            <Home 
-                onNavigate={setCurrentPage} 
+                <Home 
+                onNavigate={navigateTo} 
                 onBook={(tourId) => {
                      const tour = TOURS.find(t => t.id === tourId);
                      if(tour) handleNavigateToBooking(tourId, tour.page);
@@ -87,26 +181,26 @@ Reference ID: ${refId}
             />
         );
       case Page.EVENING_TOUR:
-        return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="evening" />;
+        return <TourDetails onNavigate={navigateTo} onBook={handleBooking} tourId="evening" />;
       case Page.BRUNCH_TOUR:
-        return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="brunch" />;
+        return <TourDetails onNavigate={navigateTo} onBook={handleBooking} tourId="brunch" />;
       case Page.ABOUT:
-        return <AboutPage onNavigate={setCurrentPage} onBlogClick={handleBlogNavigation} />;
+        return <AboutPage onNavigate={navigateTo} onBlogClick={handleBlogNavigation} />;
       case Page.CONTACT:
         return <ContactPage />;
       case Page.BLOG:
-        return <BlogPage onNavigate={setCurrentPage} initialPostId={selectedBlogPostId} />;
+        return <BlogPage onNavigate={navigateTo} initialPostId={selectedBlogPostId} />;
       case Page.TERMS: return <TermsPage />;
       case Page.CANCELLATION: return <CancellationPage />;
       case Page.COMPLAINTS: return <TextPage title="Complaints"><p>Redirecting to Complaints Book...</p></TextPage>;
-      default: return <Home onNavigate={setCurrentPage} onBook={handleBooking} />;
+      default: return <Home onNavigate={navigateTo} onBook={handleBooking} />;
     }
   };
 
   return (
     <Layout 
         activePage={currentPage} 
-        onNavigate={setCurrentPage} 
+        onNavigate={navigateTo} 
         onBookClick={() => setActiveModal('booking_selection')}
     >
       {renderPage()}
