@@ -10,6 +10,21 @@ interface LayoutProps {
   onBookClick: () => void;
 }
 
+const PAGE_HREFS: Record<Page, string> = {
+  [Page.HOME]: '/',
+  [Page.ABOUT]: '/about',
+  [Page.EVENING_TOUR]: '/tours/evening-bites',
+  [Page.BRUNCH_TOUR]: '/tours/morning-bites',
+  [Page.PRIVATE]: '/private-tours',
+  [Page.TRANSFER]: '/transfer',
+  [Page.CORPORATE]: '/corporate',
+  [Page.CONTACT]: '/contact',
+  [Page.TERMS]: '/terms',
+  [Page.CANCELLATION]: '/cancellation',
+  [Page.COMPLAINTS]: '/complaints',
+  [Page.BLOG]: '/blog',
+};
+
 export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate, onBookClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -104,6 +119,13 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const getNavHref = (item: { label: string; page: Page }) => {
+    if (item.label === 'Tours') {
+      return '/#tours-section';
+    }
+    return PAGE_HREFS[item.page] || '/';
+  };
+
   const navItems = [
     { label: 'Tours', page: Page.HOME }, // Changed from Home to Tours
     { label: 'About Us', page: Page.ABOUT },
@@ -124,9 +146,22 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           {/* Logo */}
-          <div 
+          <a
+            href="/"
             className="cursor-pointer transition-transform hover:scale-105"
-            onClick={handleLogoClick}
+            onClick={(event) => {
+              if (
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              ) {
+                return;
+              }
+              event.preventDefault();
+              handleLogoClick();
+            }}
           >
             <div className="flex items-center">
                 {/* Logo Image - Requires logo.png in the same folder */}
@@ -145,20 +180,33 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
                     </div>
                 )}
             </div>
-          </div>
+          </a>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item.label}
-                onClick={() => handleNavClick(item)}
+                href={getNavHref(item)}
+                onClick={(event) => {
+                  if (
+                    event.button !== 0 ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  ) {
+                    return;
+                  }
+                  event.preventDefault();
+                  handleNavClick(item);
+                }}
                 className={`text-sm font-medium tracking-wide hover:text-terracotta transition-colors ${
                   !isScrolled && activePage === Page.HOME ? 'text-white drop-shadow-sm' : 'text-charcoal'
                 }`}
               >
                 {item.label}
-              </button>
+              </a>
             ))}
             <Button 
               onClick={onBookClick}
@@ -184,13 +232,26 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
         {isMobileMenuOpen && (
           <div className="absolute top-full left-0 w-full bg-cream shadow-xl border-t border-gold/20 flex flex-col p-6 md:hidden gap-4 animate-slideDown">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item.label}
-                onClick={() => handleNavClick(item)}
+                href={getNavHref(item)}
+                onClick={(event) => {
+                  if (
+                    event.button !== 0 ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  ) {
+                    return;
+                  }
+                  event.preventDefault();
+                  handleNavClick(item);
+                }}
                 className="text-left text-lg py-2 border-b border-gray-100 text-olive"
               >
                 {item.label}
-              </button>
+              </a>
             ))}
             <Button onClick={() => { onBookClick(); setIsMobileMenuOpen(false); }} fullWidth>
               Book Now
