@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="120" viewBox="0 0 260 120" role="img" aria-label="Clean & Safe Certified">
+  <rect x="2" y="2" width="256" height="116" rx="14" fill="#ffffff" stroke="#d9e7dd" stroke-width="4"/>
+  <rect x="14" y="14" width="232" height="92" rx="10" fill="#0f6a37"/>
+  <circle cx="58" cy="60" r="25" fill="#e9f7ee"/>
+  <path d="M47 60l8 8 13-16" fill="none" stroke="#0f6a37" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="95" y="52" fill="#ffffff" font-size="24" font-family="Arial, Helvetica, sans-serif" font-weight="700">Clean &amp; Safe</text>
+  <text x="95" y="78" fill="#d6f5e3" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="600">Official Hygiene &amp; Safety Certificate</text>
+</svg>
