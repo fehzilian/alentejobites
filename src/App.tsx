@@ -25,10 +25,33 @@ const App: React.FC = () => {
     [Page.BLOG]: '/blog',
   };
 
-  const getPageFromPath = (pathname: string): Page => {
+  const getPathForPage = (page: Page, blogPostId?: number | null): string => {
+    if (page === Page.BLOG && blogPostId) {
+      return `/blog/${blogPostId}`;
+    }
+    return PAGE_PATHS[page] || '/';
+  };
+
+  const getRouteStateFromPath = (pathname: string): { page: Page; blogPostId: number | null } => {
     const normalizedPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+    if (normalizedPath.startsWith('/blog/')) {
+      const possibleId = Number(normalizedPath.split('/')[2]);
+      return {
+        page: Page.BLOG,
+        blogPostId: Number.isFinite(possibleId) ? possibleId : null,
+      };
+    }
+
     const foundEntry = Object.entries(PAGE_PATHS).find(([, path]) => path === normalizedPath);
-    return (foundEntry?.[0] as Page) || Page.HOME;
+    return {
+      page: (foundEntry?.[0] as Page) || Page.HOME,
+      blogPostId: null,
+    };
+  };
+
+  const getPageFromPath = (pathname: string): Page => {
+    return getRouteStateFromPath(pathname).page;
   };
 
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
@@ -36,8 +59,13 @@ const App: React.FC = () => {
   const [selectedBlogPostId, setSelectedBlogPostId] = useState<number | null>(null);
 
   const navigateTo = (page: Page, options?: { replace?: boolean }) => {
+    const nextBlogPostId = page === Page.BLOG ? selectedBlogPostId : null;
+    if (page !== Page.BLOG && selectedBlogPostId !== null) {
+      setSelectedBlogPostId(null);
+    }
+
     setCurrentPage(page);
-    const targetPath = PAGE_PATHS[page] || '/';
+    const targetPath = getPathForPage(page, nextBlogPostId);
     const currentPath = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
 
     if (currentPath !== targetPath) {
@@ -50,11 +78,14 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const initialPage = getPageFromPath(window.location.pathname);
-    setCurrentPage(initialPage);
+    const initialRoute = getRouteStateFromPath(window.location.pathname);
+    setCurrentPage(initialRoute.page);
+    setSelectedBlogPostId(initialRoute.blogPostId);
 
     const handlePopState = () => {
-      setCurrentPage(getPageFromPath(window.location.pathname));
+      const route = getRouteStateFromPath(window.location.pathname);
+      setCurrentPage(route.page);
+      setSelectedBlogPostId(route.blogPostId);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -116,8 +147,18 @@ const App: React.FC = () => {
   };
 
   const handleBlogNavigation = (postId?: number) => {
-      if (postId) setSelectedBlogPostId(postId);
-      else setSelectedBlogPostId(null);
+      if (postId) {
+        setSelectedBlogPostId(postId);
+        setCurrentPage(Page.BLOG);
+        const targetPath = getPathForPage(Page.BLOG, postId);
+        const currentPath = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
+        if (currentPath !== targetPath) {
+          window.history.pushState({}, '', targetPath);
+        }
+        return;
+      }
+
+      setSelectedBlogPostId(null);
       navigateTo(Page.BLOG);
   };
 

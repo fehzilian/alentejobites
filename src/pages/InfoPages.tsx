@@ -182,6 +182,13 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
 
         const postHeroImage = post.image;
 
+        const handleBackToJournal = () => {
+            setViewingPostId(null);
+            if (window.location.pathname !== '/blog') {
+                window.history.pushState({}, '', '/blog');
+            }
+        };
+
         return (
             <div className="pt-24 bg-white min-h-screen">
                  <SEO 
@@ -190,7 +197,7 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                 />
                 <div className="max-w-4xl mx-auto px-6 py-12">
                     <button 
-                        onClick={() => setViewingPostId(null)}
+                        onClick={handleBackToJournal}
                         className="mb-8 flex items-center gap-2 text-terracotta hover:underline font-medium text-sm"
                     >
                         ← Back to Journal
@@ -265,7 +272,10 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                 {/* Featured Post */}
                 <div 
                     className="group relative h-[600px] rounded-sm overflow-hidden mb-20 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500"
-                    onClick={() => setViewingPostId(featuredPost.id)}
+                    onClick={() => {
+                        setViewingPostId(featuredPost.id);
+                        window.history.pushState({}, '', `/blog/${featuredPost.id}`);
+                    }}
                 >
                     <div className="absolute inset-0">
                         <img src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -286,7 +296,25 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                 {/* Post Grid - 3 Columns for editorial look */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
                     {posts.filter(p => p.id !== featuredPost.id).map(post => (
-                        <div key={post.id} className="flex flex-col group cursor-pointer" onClick={() => setViewingPostId(post.id)}>
+                        <a
+                            key={post.id}
+                            href={`/blog/${post.id}`}
+                            className="flex flex-col group cursor-pointer"
+                            onClick={(event) => {
+                                if (
+                                    event.button !== 0 ||
+                                    event.metaKey ||
+                                    event.ctrlKey ||
+                                    event.shiftKey ||
+                                    event.altKey
+                                ) {
+                                    return;
+                                }
+                                event.preventDefault();
+                                setViewingPostId(post.id);
+                                window.history.pushState({}, '', `/blog/${post.id}`);
+                            }}
+                        >
                             <div className="h-64 overflow-hidden mb-6 rounded-sm relative">
                                 <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-charcoal text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
@@ -309,7 +337,7 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                                     <span className="text-xs font-bold text-olive uppercase tracking-widest border-b border-transparent group-hover:border-olive transition-all">Read Story</span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     ))}
                 </div>
             </div>

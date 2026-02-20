@@ -51,10 +51,23 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
         <div className="space-y-6">
             {/* Show only first 5 posts in sidebar */}
             {BLOG_POSTS.slice(0, 5).map((post) => (
-                <div 
-                    key={post.id} 
+                <a
+                    key={post.id}
+                    href={`/blog/${post.id}`}
                     className="group cursor-pointer flex gap-4 items-start"
-                    onClick={() => onBlogClick && onBlogClick(post.id)}
+                    onClick={(event) => {
+                      if (
+                        event.button !== 0 ||
+                        event.metaKey ||
+                        event.ctrlKey ||
+                        event.shiftKey ||
+                        event.altKey
+                      ) {
+                        return;
+                      }
+                      event.preventDefault();
+                      onBlogClick && onBlogClick(post.id);
+                    }}
                 >
                     <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-lg group-hover:opacity-80 transition-opacity" />
                     <div>
@@ -63,7 +76,7 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
                             {post.title}
                         </h4>
                     </div>
-                </div>
+                </a>
             ))}
         </div>
         <button 
@@ -324,9 +337,9 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
             {TOURS.map((tour) => (
                 <div key={tour.id} className="bg-cream rounded-3xl overflow-hidden shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group flex flex-col">
                     {/* Clickable Image Area */}
-                    <div 
-                        className="relative h-64 overflow-hidden shrink-0 cursor-pointer"
-                        onClick={() => onNavigate(tour.page)}
+                    <a
+                        className="relative h-64 overflow-hidden shrink-0 cursor-pointer block"
+                        href={tour.page === Page.EVENING_TOUR ? '/tours/evening-bites' : '/tours/morning-bites'}
                     >
                         {tour.badges && tour.badges.includes("Most Popular") && (
                             <div className="absolute top-4 left-4 bg-gold text-white px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-wide z-10 shadow-lg">
@@ -337,17 +350,17 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
                             Founding Price
                         </div>
                         <img src={tour.image} alt={tour.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                    </div>
+                    </a>
                     
                     <div className="p-8 flex flex-col flex-grow">
                         <div className="mb-4">
                             {/* Clickable Title with Classic Underline Hover (decoration-2) */}
-                            <h3 
-                                className="font-serif text-2xl text-olive mb-2 leading-tight cursor-pointer hover:underline decoration-terracotta decoration-2 underline-offset-4 transition-all"
-                                onClick={() => onNavigate(tour.page)}
+                            <a
+                                className="font-serif text-2xl text-olive mb-2 leading-tight cursor-pointer hover:underline decoration-terracotta decoration-2 underline-offset-4 transition-all block"
+                                href={tour.page === Page.EVENING_TOUR ? '/tours/evening-bites' : '/tours/morning-bites'}
                             >
                                 {tour.title}
-                            </h3>
+                            </a>
                             <p className="text-terracotta italic text-sm mb-4">{tour.tagline}</p>
                             <div className="flex items-center gap-2 text-sm text-gray-500 font-medium bg-white inline-block px-3 py-1 rounded-md border border-gray-200">
                                 <span>⏰ {tour.time}</span>
