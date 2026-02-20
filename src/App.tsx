@@ -100,6 +100,11 @@ const App: React.FC = () => {
   const handleBooking = async (tourId: string, date?: Date, time?: string, guests?: number) => {
     const tour = TOURS.find(t => t.id === tourId);
     if (tour) {
+        if (!tour.checkoutUrl || !/^https?:\/\//i.test(tour.checkoutUrl)) {
+          window.alert('Stripe checkout is not configured yet. Please set VITE_STRIPE_CHECKOUT_EVENING and VITE_STRIPE_CHECKOUT_BRUNCH on Vercel.');
+          return;
+        }
+
         if (!date || !time || !guests) {
           console.warn('Attempted to book without date selection.');
           return;

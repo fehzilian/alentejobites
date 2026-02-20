@@ -30,11 +30,12 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
   
   const bookingWidgetRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
+  const payButtonRef = useRef<HTMLDivElement | null>(null);
 
   const isEvening = tourId === 'evening';
   const hasBadges = tour.badges && tour.badges.length > 0;
   const pickupPointLabel = 'Largo do Conde de Vila Flor, 7000-804 Évora';
-  const pickupPointMapUrl = (import.meta as any).env?.VITE_PICKUP_POINT_MAP_URL || 'https://www.google.com/maps/place/Largo+do+Conde+de+Vila+Flor,+7000-804+%C3%89vora/@38.5728787,-7.9087468,19z/data=!3m1!4b1!4m14!1m7!3m6!1s0xd19e4dd098f7a41:0x1a7638f5bfbe7fbd!2sTemplo+Romano+de+%C3%89vora!8m2!3d38.5725904!4d-7.9072944!16s%2Fm%2F03hlk1t!3m5!1s0xd19e4dda07f87b5:0xaddcc9a45a282541!8m2!3d38.5728777!4d-7.9075291!16s%2Fg%2F11c63_x270?entry=ttu&g_ep=EgoyMDI2MDIxNi4wIKXMDSoASAFQAw%3D%3D';
+  const pickupPointMapUrl = (import.meta as any).env?.VITE_PICKUP_POINT_MAP_URL || 'https://www.google.com/maps/@38.5727858,-7.9077529,3a,75y,340.51h,75.38t/data=!3m7!1e1!3m5!1sOqUp7qnpAl4IfCwkrSQ4jA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D14.618325672120633%26panoid%3DOqUp7qnpAl4IfCwkrSQ4jA%26yaw%3D340.51222839321315!7i16384!8i8192?hl=en-US&entry=ttu&g_ep=EgoyMDI2MDIxNy4wIKXMDSoASAFQAw%3D%3D';
   const pickupPointEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(pickupPointLabel)}&z=18&output=embed`;
 
   const heroStats = isEvening
@@ -172,6 +173,16 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
     if (selectedDate && !selectedTime) setSelectedTime(tour.time);
   }, [selectedDate, selectedTime, tour.time]);
 
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const timer = window.setTimeout(() => {
+      payButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [selectedDate]);
+
   // Handle Hash Navigation (for "Book Now" click from Home)
   useEffect(() => {
     if (window.location.hash === '#book') {
@@ -248,7 +259,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
              )}
         </div>
 
-        <div className="mt-2 pt-4 border-t border-gray-100">
+        <div className="mt-2 pt-4 border-t border-gray-100" id="book">
             <div className="flex justify-between items-end mb-4">
                 <span className="text-sm text-gray-500 font-medium">Total</span>
                 <div className="text-right">
@@ -259,19 +270,21 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 </div>
             </div>
 
-            <Button 
-                fullWidth 
-                onClick={() => onBook(tour.id, selectedDate || undefined, tour.time, guests)} 
-                disabled={isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0}
-                className={`py-4 text-lg shadow-xl transition-all 
-                    ${(isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0)
-                        ? 'opacity-50 cursor-not-allowed bg-gray-300 hover:bg-gray-300 shadow-none' 
-                        : 'hover:shadow-2xl hover:-translate-y-1 bg-[#25D366] hover:bg-[#128C7E] border-transparent'
-                    }
-                `}
-            >
-                {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Choose a Date')}
-            </Button>
+            <div ref={payButtonRef}>
+              <Button 
+                  fullWidth 
+                  onClick={() => onBook(tour.id, selectedDate || undefined, tour.time, guests)} 
+                  disabled={isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0}
+                  className={`py-4 text-lg shadow-xl transition-all 
+                      ${(isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0)
+                          ? 'opacity-50 cursor-not-allowed bg-gray-300 hover:bg-gray-300 shadow-none' 
+                          : 'hover:shadow-2xl hover:-translate-y-1 bg-[#25D366] hover:bg-[#128C7E] border-transparent'
+                      }
+                  `}
+              >
+                  {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Choose a Date')}
+              </Button>
+            </div>
             
             <p className="text-[11px] text-gray-500 text-center mt-3 flex items-center justify-center gap-2">
                 <span className="inline-flex items-center rounded-md border border-[#635BFF]/20 bg-[#635BFF]/10 px-2 py-0.5 text-[#635BFF] font-semibold tracking-wide">
@@ -314,6 +327,22 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         {/* Header */}
         <div className="bg-cream border-b border-gray-100 pt-16 pb-12">
             <div className="max-w-6xl mx-auto px-4">
+                <div className="hidden lg:flex justify-end mb-4">
+                    <div className="rounded-xl border border-olive/20 bg-white/90 backdrop-blur px-4 py-3 shadow-sm flex items-center gap-4">
+                        <div className="text-right">
+                            <p className="text-[11px] uppercase tracking-wide text-gray-500">Ready to reserve?</p>
+                            <p className="text-sm font-semibold text-olive">Secure your spot in seconds</p>
+                        </div>
+                        <Button
+                            onClick={() => {
+                                bookingWidgetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }}
+                            className="!py-2 !px-4 whitespace-nowrap"
+                        >
+                            Book Now ↓
+                        </Button>
+                    </div>
+                </div>
                 <div className="flex flex-col gap-2">
                     {hasBadges && (
                         <div className="flex gap-2 mb-2">
