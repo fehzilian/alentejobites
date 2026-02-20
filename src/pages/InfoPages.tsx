@@ -34,7 +34,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onBlogClick })
                      <h2 className="font-serif text-3xl text-olive mb-6">A Note from the Founder</h2>
                      <div className="prose prose-md text-gray-600 leading-relaxed">
                         <p className="mb-4">
-                            Hi, I’m Felippe. Alentejo Bites was born from a simple realization after years of guiding in Lisbon: while the capital is beautiful, the most authentic food stories in Portugal are hidden here in the Alentejo.
+                            Hi, I’m Felippe. Alentejo Bites was born from a simple realization after years of working in tourism—studying in Évora and guiding tours in Lisbon: while the capital is beautiful, the most authentic food stories in Portugal are hidden here in the Alentejo.
                         </p>
                         <p className="mb-4">
                             This region is often considered Portugal's best-kept culinary secret. Recently recognized by <strong>TasteAtlas</strong> as one of the world's top food regions, Évora offers flavors you simply can't find anywhere else—from ancient wine traditions to recipes passed down through generations.
@@ -122,41 +122,38 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onBlogClick })
             </div>
         </Section>
 
-        {/* Commitment Section (Kept as is, but slightly simplified if needed) */}
-        <Section className="bg-white">
+        <Section className="bg-cream/50">
             <SectionTitle subtitle="What drives us">Our Philosophy</SectionTitle>
-            <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
-                {/* 1. Independent & Local First */}
-                <div className="text-center group">
-                    <div className="w-16 h-16 mx-auto bg-cream rounded-full flex items-center justify-center mb-4">
-                        <span className="text-3xl">🏘️</span>
+            <div className="max-w-7xl mx-auto rounded-3xl border border-olive/10 bg-white overflow-hidden shadow-xl">
+                <div className="grid lg:grid-cols-5">
+                    <div className="lg:col-span-2 bg-gradient-to-b from-olive to-charcoal p-8 md:p-10 text-white">
+                        <p className="text-gold text-xs uppercase tracking-[0.3em] font-bold mb-4">Our Promise</p>
+                        <h3 className="font-serif text-3xl leading-tight mb-5">Every stop should feel personal, local, and deeply Alentejano.</h3>
+                        <p className="text-white/80 text-sm leading-relaxed">
+                            We design each experience with the same care we use when hosting friends at home — a relaxed pace,
+                            honest flavors, and stories that connect people to Évora beyond the postcard version.
+                        </p>
                     </div>
-                    <h3 className="font-serif text-xl font-bold text-olive mb-3">Independent & Local</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed px-2">
-                        We support small businesses. No chains, no commissions, just good food.
-                    </p>
-                </div>
 
-                {/* 2. Personal Connections */}
-                <div className="text-center group">
-                     <div className="w-16 h-16 mx-auto bg-cream rounded-full flex items-center justify-center mb-4">
-                        <span className="text-3xl">🍷</span>
-                    </div>
-                    <h3 className="font-serif text-xl font-bold text-olive mb-3">Small Groups</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed px-2">
-                        Max 12 people. We want you to make friends, not just follow a flag.
-                    </p>
-                </div>
+                    <div className="lg:col-span-3 p-6 md:p-10 grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                        <article className="rounded-2xl border border-olive/10 bg-cream/40 p-5">
+                            <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-2xl mb-4 shadow-sm">🏘️</div>
+                            <h4 className="font-serif text-lg text-olive mb-2">Independent & Local</h4>
+                            <p className="text-sm text-gray-600 leading-relaxed">No chains or tourist traps — just trusted family-run spots and real neighborhood flavors.</p>
+                        </article>
 
-                {/* 3. Experts in Local Food */}
-                <div className="text-center group">
-                     <div className="w-16 h-16 mx-auto bg-cream rounded-full flex items-center justify-center mb-4">
-                        <span className="text-3xl">🎓</span>
+                        <article className="rounded-2xl border border-olive/10 bg-cream/40 p-5">
+                            <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-2xl mb-4 shadow-sm">🍷</div>
+                            <h4 className="font-serif text-lg text-olive mb-2">Small Group Energy</h4>
+                            <p className="text-sm text-gray-600 leading-relaxed">With groups capped at 12, the vibe stays warm, social, and easy to enjoy at every table.</p>
+                        </article>
+
+                        <article className="rounded-2xl border border-olive/10 bg-cream/40 p-5 sm:col-span-2 xl:col-span-1">
+                            <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-2xl mb-4 shadow-sm">🎓</div>
+                            <h4 className="font-serif text-lg text-olive mb-2">Culture Through Food</h4>
+                            <p className="text-sm text-gray-600 leading-relaxed">Every bite comes with context — wines, recipes, and traditions that shaped Alentejo life.</p>
+                        </article>
                     </div>
-                    <h3 className="font-serif text-xl font-bold text-olive mb-3">Regional Experts</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed px-2">
-                        We don't just eat; we teach you about the history and culture of Alentejo.
-                    </p>
                 </div>
             </div>
         </Section>
@@ -183,6 +180,15 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
         const post = BLOG_POSTS.find(p => p.id === viewingPostId);
         if (!post) return null;
 
+        const postHeroImage = post.image;
+
+        const handleBackToJournal = () => {
+            setViewingPostId(null);
+            if (window.location.pathname !== '/blog') {
+                window.history.pushState({}, '', '/blog');
+            }
+        };
+
         return (
             <div className="pt-24 bg-white min-h-screen">
                  <SEO 
@@ -191,7 +197,7 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                 />
                 <div className="max-w-4xl mx-auto px-6 py-12">
                     <button 
-                        onClick={() => setViewingPostId(null)}
+                        onClick={handleBackToJournal}
                         className="mb-8 flex items-center gap-2 text-terracotta hover:underline font-medium text-sm"
                     >
                         ← Back to Journal
@@ -207,7 +213,13 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                          </div>
                     </div>
 
-                    <img src={post.image} alt={post.title} className="w-full h-[50vh] object-cover rounded-xl shadow-lg mb-12" />
+                    <div className={`w-full rounded-xl shadow-lg mb-12 ${post.id === 1 ? 'bg-cream border border-gold/20 p-8 md:p-10' : ''}`}>
+                        <img
+                            src={postHeroImage}
+                            alt={post.id === 1 ? 'TasteAtlas logo' : post.title}
+                            className={`w-full ${post.id === 1 ? 'h-20 md:h-24 object-contain' : 'h-[50vh] object-cover rounded-xl'}`}
+                        />
+                    </div>
 
                     <div className="prose prose-lg prose-olive mx-auto leading-loose text-gray-600">
                         <p className="text-xl font-serif text-charcoal leading-relaxed mb-8 border-l-4 border-gold pl-6 italic">
@@ -260,7 +272,10 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                 {/* Featured Post */}
                 <div 
                     className="group relative h-[600px] rounded-sm overflow-hidden mb-20 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500"
-                    onClick={() => setViewingPostId(featuredPost.id)}
+                    onClick={() => {
+                        setViewingPostId(featuredPost.id);
+                        window.history.pushState({}, '', `/blog/${featuredPost.id}`);
+                    }}
                 >
                     <div className="absolute inset-0">
                         <img src={featuredPost.image} alt={featuredPost.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -281,7 +296,25 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                 {/* Post Grid - 3 Columns for editorial look */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
                     {posts.filter(p => p.id !== featuredPost.id).map(post => (
-                        <div key={post.id} className="flex flex-col group cursor-pointer" onClick={() => setViewingPostId(post.id)}>
+                        <a
+                            key={post.id}
+                            href={`/blog/${post.id}`}
+                            className="flex flex-col group cursor-pointer"
+                            onClick={(event) => {
+                                if (
+                                    event.button !== 0 ||
+                                    event.metaKey ||
+                                    event.ctrlKey ||
+                                    event.shiftKey ||
+                                    event.altKey
+                                ) {
+                                    return;
+                                }
+                                event.preventDefault();
+                                setViewingPostId(post.id);
+                                window.history.pushState({}, '', `/blog/${post.id}`);
+                            }}
+                        >
                             <div className="h-64 overflow-hidden mb-6 rounded-sm relative">
                                 <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-charcoal text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
@@ -304,7 +337,7 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                                     <span className="text-xs font-bold text-olive uppercase tracking-widest border-b border-transparent group-hover:border-olive transition-all">Read Story</span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     ))}
                 </div>
             </div>
@@ -355,13 +388,21 @@ export const ContactPage: React.FC = () => (
                          <p className="text-terracotta font-medium">+351 925 464 464</p>
                     </div>
                 </div>
-                 <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                 <form
+                    className="space-y-4"
+                    action="https://formsubmit.co/alentejobites@gmail.com"
+                    method="POST"
+                  >
+                    <input type="hidden" name="_subject" value="New contact form message - Alentejo Bites" />
+                    <input type="hidden" name="_captcha" value="false" />
+                    <input type="hidden" name="_template" value="table" />
                     <div className="grid md:grid-cols-2 gap-4">
-                        <input type="text" placeholder="Name" className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
-                        <input type="email" placeholder="Email" className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
+                        <input name="name" type="text" placeholder="Name" required className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
+                        <input name="email" type="email" placeholder="Email" required className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive" />
                     </div>
-                    <textarea rows={5} placeholder="Message" className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive"></textarea>
-                    <Button fullWidth>Send Message</Button>
+                    <textarea name="message" rows={5} placeholder="Message" required className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-olive"></textarea>
+                    <Button fullWidth type="submit">Send Message</Button>
+                    <p className="text-xs text-gray-500 text-center">After clicking send, you'll see a confirmation page and we'll receive your email directly.</p>
                 </form>
             </div>
         </Section>
@@ -384,19 +425,61 @@ export const TextPage: React.FC<{ title: string, children: React.ReactNode }> = 
 export const TermsPage: React.FC = () => (
     <TextPage title="Terms of Service">
         <SEO title="Terms of Service | Alentejo Bites" description="Terms and conditions for Alentejo Bites tours." />
-        <p className="mb-4"><strong>Last updated: January 2026</strong></p>
-        
-        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">1. Booking & Payments</h3>
-        <p className="mb-4">All bookings must be made online via our secure checkout or through our approved partners. Full payment is required to confirm your reservation. Prices are in Euro (€) and include all applicable taxes.</p>
-        
-        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">2. Health & Safety</h3>
-        <p className="mb-4">Guests are responsible for informing us of any dietary restrictions or allergies at the time of booking. While we try to accommodate all requests, we cannot guarantee that food is free from allergens as we visit third-party establishments.</p>
-        
-        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">3. Liability</h3>
-        <p className="mb-4">Alentejo Bites is not liable for any personal injury, loss of property, or damage occurred during the tour. Guests are advised to have their own travel insurance.</p>
-        
-        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">4. Media & Photography</h3>
-        <p className="mb-4">We may take photos or videos during the tour for marketing purposes. If you prefer not to be photographed, please inform your guide at the start of the tour.</p>
+        <p className="mb-4"><strong>Last updated: 19/02/2026</strong></p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">1. Company Details</h3>
+        <p className="mb-4">1.1. The website www.alentejobites.com is a service provided by:</p>
+        <p className="mb-4">Alentejo Bites<br/>Address: Travessa dos Mastros 19 2D, Lisboa 1200-265, Portugal<br/>Tax ID: 301201196<br/>Contact email: alentejobites@gmail.com</p>
+        <p className="mb-4">Hereinafter referred to as Alentejo Bites.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">2. Purpose</h3>
+        <p className="mb-4">2.1. These Terms of Service govern access to and use of this website and the services offered by Alentejo Bites.</p>
+        <p className="mb-4">2.2. Accessing and using the website implies full and unconditional acceptance of these Terms.</p>
+        <p className="mb-4">2.3. Alentejo Bites reserves the right to modify, update, or change these Terms at any time without prior notice. Continued use of the website constitutes acceptance of the updated Terms.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">3. Use of the Website</h3>
+        <p className="mb-4">3.1. By using this website, the User declares having the legal capacity to accept these Terms.</p>
+        <p className="mb-4">3.2. If the User registers or requests any service, they agree to provide truthful, accurate, complete, and lawful information.</p>
+        <p className="mb-4">3.3. The User undertakes to use the website and its contents lawfully and agrees not to:</p>
+        <p className="mb-4">a) Use the content for illegal, immoral, or public policy–violating purposes;<br/>b) Reproduce, copy, distribute, modify, or transform any content without the express written authorization of Alentejo Bites;<br/>c) Use the information obtained to send unsolicited advertising, spam, or any commercial communications;<br/>d) Introduce viruses, malware, or any harmful systems that could damage or disrupt the website or its services.</p>
+        <p className="mb-4">3.4. Alentejo Bites shall not be held responsible for damages to the User’s equipment or systems resulting from accessing the website or from improper or negligent use.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">4. Intellectual Property</h3>
+        <p className="mb-4">4.1. All content on this website, including but not limited to texts, images, logos, graphics, videos, software, source code, and design, is the exclusive property of Alentejo Bites or its licensors and is protected by intellectual and industrial property laws.</p>
+        <p className="mb-4">4.2. Any reproduction, distribution, public communication, transformation, extraction, or reuse of the contents is strictly prohibited without prior written authorization from Alentejo Bites.</p>
+        <p className="mb-4">4.3. Alentejo Bites reserves the right to take civil and/or criminal legal action against any person or entity that infringes its intellectual or industrial property rights.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">5. Responsibilities and Warranties</h3>
+        <p className="mb-4">5.1. Alentejo Bites does not guarantee:</p>
+        <p className="mb-4">a) The uninterrupted availability of the website;<br/>b) The absence of errors or defects in the content;<br/>c) That the website or its servers are free from viruses or harmful components;<br/>d) That the security measures implemented are completely invulnerable;<br/>e) The usefulness or suitability of the content for any specific purpose.</p>
+        <p className="mb-4">5.2. Alentejo Bites states that it has adopted all reasonable technical measures, in accordance with the state of the art, to ensure the proper functioning of the website and reduce security risks.</p>
+        <p className="mb-4">5.3. Alentejo Bites is not responsible for any damage caused by misuse of the website by Users or third parties.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">6. Data Protection</h3>
+        <p className="mb-4">6.1. Alentejo Bites complies with all applicable data protection regulations, including the General Data Protection Regulation (GDPR) and Portuguese national legislation.</p>
+        <p className="mb-4">6.2. Personal data provided by the User will be processed for the following purposes:</p>
+        <p className="mb-4">a) Providing the requested services;<br/>b) Managing User requests and inquiries;<br/>c) Sending information related to Alentejo Bites’ activities, when authorized by the User.</p>
+        <p className="mb-4">6.3. By providing personal data, the User expressly authorizes its processing for the purposes described above.</p>
+        <p className="mb-4">6.4. The User guarantees that all data provided is true, accurate, complete, and up to date and shall be responsible for any damages arising from incorrect or false information.</p>
+        <p className="mb-4">6.5. Alentejo Bites adopts appropriate technical and organizational measures to ensure the security, confidentiality, and integrity of personal data.</p>
+        <p className="mb-4">6.6. The User may exercise their rights of access, rectification, erasure, restriction, portability, and objection by sending a request to:</p>
+        <p className="mb-4">Email: alentejobites@gmail.com</p>
+        <p className="mb-4">Address: Travessa dos Mastros 19 2D, Lisboa 1200-265, Portugal</p>
+        <p className="mb-4">Proof of identity may be required.</p>
+        <p className="mb-4">6.7. Alentejo Bites reserves the right to modify its data protection practices and will inform Users of any significant changes.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">7. Conduct in Events or On-Site Services (if applicable)</h3>
+        <p className="mb-4">7.1. Users must not attend events or participate in activities if they are suffering from any contagious or infectious disease or are under self-quarantine.</p>
+        <p className="mb-4">7.2. Users may only access areas and facilities authorized by Alentejo Bites or its representatives.</p>
+        <p className="mb-4">7.3. Users must comply with all health, safety, and operational guidelines provided by Alentejo Bites.</p>
+        <p className="mb-4">7.4. Users acknowledge that participation in certain activities involves inherent risks and agree that, except in cases of gross negligence or willful misconduct by Alentejo Bites, they waive any claims for damages arising from such risks.</p>
+        <p className="mb-4">7.5. Users accept full responsibility for their own conduct.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">8. Applicable Law and Jurisdiction</h3>
+        <p className="mb-4">8.1. These Terms of Service shall be governed by and construed in accordance with the laws of Portugal.</p>
+        <p className="mb-4">8.2. Any disputes arising from these Terms or from the use of this website shall be submitted to the exclusive jurisdiction of the courts of Lisbon, Portugal, with express waiver of any other jurisdiction.</p>
+
+        <p className="mb-4">Copyright © 2026 Alentejo Bites. All rights reserved.</p>
     </TextPage>
 );
 
@@ -404,18 +487,51 @@ export const TermsPage: React.FC = () => (
 export const CancellationPage: React.FC = () => (
     <TextPage title="Cancellation Policy">
         <SEO title="Cancellation Policy | Alentejo Bites" description="Cancellation and refund policy for Alentejo Bites." />
-        
-        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">Flexible Cancellation</h3>
-        <p className="mb-4">We understand travel plans change. That's why we offer free cancellation up to 48 hours before your scheduled tour time.</p>
-        
-        <ul className="list-disc pl-5 space-y-2 mt-4 mb-8">
-            <li><strong>More than 48 hours notice:</strong> 100% Refund of the ticket price.</li>
-            <li><strong>Less than 48 hours notice:</strong> No Refund, but we may offer rescheduling subject to availability.</li>
-            <li><strong>No-shows:</strong> No Refund. Late arrivals of more than 15 minutes may be considered no-shows to respect the schedule of other guests.</li>
-        </ul>
-        
-        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">Weather Policy</h3>
-        <p className="mb-4">Our tours run rain or shine. In the event of extreme weather warnings (Red Alert) issued by civil protection, we will cancel the tour and offer a full refund or rescheduling.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">CANCELLATION &amp; BOOKING POLICY – ALENTEJO BITES</h3>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">SMALL GROUP TOURS</h3>
+        <p className="mb-4">A small group tour can be cancelled with a full refund up to 48 hours before the tour departure time.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">PRIVATE TOURS</h3>
+        <p className="mb-4">A private tour can be cancelled with a full refund up to 72 hours before the tour departure time.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">LATE ARRIVALS AND NO SHOWS</h3>
+        <p className="mb-4">Due to extremely strict time slots for entry into attractions and for food preparation, we recommend that you arrive at the meeting point at least 5 minutes before the scheduled start time of the tour or experience.</p>
+        <p className="mb-4">Our tours begin and depart precisely at the scheduled time. If you arrive late or fail to find the meeting point for any reason, refund requests will not be honored.</p>
+        <p className="mb-4">If you experience difficulties arriving on time, please contact us as soon as possible so we can do our best to assist you. In some cases, if the tour has already started, we may be able to help you locate the guide and join the group during the itinerary, subject to feasibility and timing.</p>
+        <p className="mb-4">Rescheduling to the next available tour may also be offered, depending on availability.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">CANCELLATION DUE TO FLIGHTS, TRAINS, VEHICLES OR ILLNESS</h3>
+        <p className="mb-4">Within 24 hours of the tour start time, your place on the tour is reserved exclusively for you. As we are unable to refill your spot on short notice, we do not offer refunds for cancellations made within this period, including those caused by transportation issues or illness.</p>
+        <p className="mb-4">We strongly recommend planning your schedule carefully to avoid missing your experience.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">WEATHER</h3>
+        <p className="mb-4">Our tours run rain or shine. We do not offer refunds for cancellations made within 24 hours due to unfavorable weather conditions.</p>
+        <p className="mb-4">In the rare event that weather conditions make it impossible or unsafe to operate the tour, Alentejo Bites will contact you to offer either a rescheduling or a full refund.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">DISCOUNT CODES</h3>
+        <p className="mb-4">Discount codes are valid for new bookings only. They cannot be applied to existing reservations or used retroactively.</p>
+        <p className="mb-4">Gift cards cannot be combined with discount or promotional codes.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">AMENDMENT POLICY</h3>
+        <p className="mb-4">We are happy to help you reschedule your tour free of charge for any request made more than 24 hours before the tour start time, subject to availability.</p>
+        <p className="mb-4">For rescheduling requests made within 24 hours of the tour start time, Alentejo Bites reserves the right to charge an amendment fee to cover any additional costs incurred (such as tickets or supplier fees). We do not profit from amendments and always aim to keep additional costs to a minimum.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">PROMOTIONAL CODES</h3>
+        <p className="mb-4">Promotional or discount codes must be used at the time of purchase. They cannot be used retroactively and cannot be stacked, transferred, consolidated, or reused unless otherwise stated.</p>
+        <p className="mb-4">All promotional codes have an expiration date. If none is specified, the default expiration is one year from the date of issue.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">TRAVEL INSURANCE</h3>
+        <p className="mb-4">Alentejo Bites strongly recommends that guests purchase travel insurance to cover cancellations, delays, or unforeseen circumstances beyond anyone’s control.</p>
+        <p className="mb-4">Guests agree that Alentejo Bites and any partner operators are not liable for such circumstances and hold both parties harmless. Any claims must be made directly with the insurance provider, not with Alentejo Bites.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">CHANGES TO THIS POLICY</h3>
+        <p className="mb-4">Alentejo Bites reserves the right to update or modify this policy at any time at its sole discretion.</p>
+
+        <h3 className="text-2xl text-olive mt-8 mb-4 font-serif">CONTACT US</h3>
+        <p className="mb-4">If you have any questions regarding this policy, please contact us at:</p>
+        <p className="mb-4">📧 alentejobites@gmail.com</p>
     </TextPage>
 );
 
