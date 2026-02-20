@@ -326,24 +326,8 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         
         {/* Header */}
         <div className="bg-cream border-b border-gray-100 pt-16 pb-12">
-            <div className="max-w-6xl mx-auto px-4">
-                <div className="hidden lg:flex justify-end mb-4">
-                    <div className="rounded-xl border border-olive/20 bg-white/90 backdrop-blur px-4 py-3 shadow-sm flex items-center gap-4">
-                        <div className="text-right">
-                            <p className="text-[11px] uppercase tracking-wide text-gray-500">Ready to reserve?</p>
-                            <p className="text-sm font-semibold text-olive">Secure your spot in seconds</p>
-                        </div>
-                        <Button
-                            onClick={() => {
-                                bookingWidgetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }}
-                            className="!py-2 !px-4 whitespace-nowrap"
-                        >
-                            Book Now ↓
-                        </Button>
-                    </div>
-                </div>
-                <div className="flex flex-col gap-2">
+            <div className="max-w-6xl mx-auto px-4 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+                <div className="flex flex-col gap-2 lg:col-span-8">
                     {hasBadges && (
                         <div className="flex gap-2 mb-2">
                             {tour.badges?.map(badge => (
@@ -364,11 +348,20 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                         ))}
                     </div>
                 </div>
+
+                <div className="hidden lg:block lg:col-span-4">
+                    <div
+                        ref={bookingWidgetRef}
+                        className="bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100"
+                    >
+                        <BookingForm />
+                    </div>
+                </div>
             </div>
         </div>
 
         {/* Main Content Grid */}
-        <Section className="!py-12">
+        <Section className="!py-10">
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 relative">
                 
                 {/* Desktop Social Share (Left Sidebar) */}
@@ -380,7 +373,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 </div>
 
                 {/* Main Content (Center) */}
-                <div className="lg:col-span-7 pb-20">
+                <div className="lg:col-span-11 pb-20">
                     <img src={tour.image} alt={tour.title} className="w-full h-80 md:h-[450px] object-cover rounded-xl shadow-md mb-10" />
                     
                     {/* Mobile Info Bar */}
@@ -489,16 +482,6 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                                 ))}
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                {/* Booking Widget (Right Sidebar - Desktop Only) */}
-                <div className="lg:col-span-4 relative hidden lg:block">
-                    <div 
-                        ref={bookingWidgetRef}
-                        className="sticky top-28 bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 z-30"
-                    >
-                        <BookingForm />
                     </div>
                 </div>
             </div>
