@@ -29,10 +29,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const [certImgError, setCertImgError] = useState(false);
-  const [certSrc, setCertSrc] = useState('https://www.dgae.gov.pt/upload/SGMEE_5106/imagens/i010730.png');
   const [logoSrc, setLogoSrc] = useState('/logo.png');
-  const [showCookieBanner, setShowCookieBanner] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,18 +38,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    const consent = window.localStorage.getItem('ab_cookie_consent');
-    if (!consent) {
-      setShowCookieBanner(true);
-    }
-  }, []);
-
-  const handleCookieConsent = (choice: 'accepted' | 'essential_only') => {
-    window.localStorage.setItem('ab_cookie_consent', choice);
-    setShowCookieBanner(false);
-  };
 
   useEffect(() => {
     const image = new Image();
