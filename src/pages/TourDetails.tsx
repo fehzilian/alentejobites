@@ -320,11 +320,13 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         <SEO title={seoData.title} description={seoData.desc} />
         
         {/* Header */}
-        <div className="relative border-b border-gray-100 pt-12 pb-8 overflow-hidden">
-            <img src={tour.image} alt={tour.title} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-br from-charcoal/75 via-charcoal/55 to-olive/45" />
-            <div className="relative max-w-6xl mx-auto px-4 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
-                <div className="flex flex-col gap-1.5 lg:col-span-8">
+        <div className="relative border-b border-gray-100 bg-cream overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-48 md:h-56 overflow-hidden">
+                <img src={tour.image} alt={tour.title} className="w-full h-full object-cover opacity-30" />
+                <div className="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/20 to-cream" />
+            </div>
+            <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-10 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+                <div className="flex flex-col gap-2 lg:col-span-8">
                     {hasBadges && (
                         <div className="flex gap-2 mb-2">
                             {tour.badges?.map(badge => (
@@ -334,13 +336,13 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                             ))}
                         </div>
                     )}
-                    <h1 className="font-serif text-3xl md:text-5xl text-white font-bold leading-tight drop-shadow">{tour.title}</h1>
-                    <p className="text-xl text-white/90 italic font-serif">{tour.tagline}</p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mt-4">
+                    <h1 className="font-serif text-4xl md:text-6xl text-charcoal font-bold leading-tight">{tour.title}</h1>
+                    <p className="text-2xl text-gray-600 italic font-serif">{tour.tagline}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
                         {heroStats.map((stat) => (
-                            <div key={stat.label} className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-lg px-3 py-2.5">
-                                <p className="text-[11px] uppercase tracking-wider text-white/75 font-semibold">{stat.label}</p>
-                                <p className="text-xs md:text-sm text-white font-semibold">{stat.value}</p>
+                            <div key={stat.label} className="bg-white/90 border border-olive/10 rounded-lg px-4 py-3 shadow-sm">
+                                <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">{stat.label}</p>
+                                <p className="text-sm md:text-base text-charcoal font-semibold">{stat.value}</p>
                             </div>
                         ))}
                     </div>
@@ -349,7 +351,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 <div className="hidden lg:block lg:col-span-4">
                     <div
                         ref={bookingWidgetRef}
-                        className="bg-white/95 backdrop-blur p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.20)] border border-white/40"
+                        className="bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100"
                     >
                         <BookingForm />
                     </div>
@@ -358,7 +360,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         </div>
 
         {/* Main Content Grid */}
-        <Section className="!py-6">
+        <Section className="!py-10">
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 relative">
                 
                 {/* Desktop Social Share (Left Sidebar) */}
