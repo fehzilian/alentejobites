@@ -295,14 +295,14 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
                          <div className="group text-center md:text-left">
                              <div className="overflow-hidden rounded-xl shadow-md mb-4 h-40">
                                   <img 
-                                     src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&h=400&fit=crop" 
-                                     alt="Food" 
+                                     src="https://media.licdn.com/dms/image/v2/C4D0BAQGxTk7RnaH8PA/company-logo_200_200/company-logo_200_200/0/1648062619268?e=2147483647&v=beta&t=EXu-OAI2RSRK9ugvOa0ka117heg2hLcptBneTsD-VEI" 
+                                     alt="Regional food recognition" 
                                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                                   />
                              </div>
                              <h3 className="font-serif text-lg font-bold text-olive mb-2">A Region Worth Discovering</h3>
                              <p className="text-gray-600 text-xs leading-relaxed">
-                                 Alentejo is often considered Portugal’s best-kept culinary secret — recognized by TasteAtlas as one of the world’s top regions for food, authenticity, and tradition.
+                                 Alentejo is often considered Portugal’s best-kept culinary secret — a region known for authenticity, deep traditions, and memorable flavors.
                              </p>
                              <div className="mt-3 flex justify-center md:justify-start">
                                  <img
