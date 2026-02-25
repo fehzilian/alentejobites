@@ -304,6 +304,14 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
                              <p className="text-gray-600 text-xs leading-relaxed">
                                  Alentejo is often considered Portugal’s best-kept culinary secret — a region known for authenticity, deep traditions, and memorable flavors.
                              </p>
+                             <div className="mt-3 flex justify-center md:justify-start">
+                                 <img
+                                     src="https://www.tasteatlas.com/images/logo.svg"
+                                     alt="TasteAtlas"
+                                     className="h-6 w-auto opacity-90"
+                                     loading="lazy"
+                                 />
+                             </div>
                          </div>
                       </div>
                   </div>
