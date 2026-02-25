@@ -7,6 +7,7 @@ import { TourDetails } from './pages/TourDetails.tsx';
 import { AboutPage, ContactPage, TextPage, TermsPage, CancellationPage, BlogPage } from './pages/InfoPages.tsx';
 import { Modal, Button } from './components/UI.tsx';
 import { SEO } from './components/SEO.tsx';
+import { supabase } from './lib/supabase.ts';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
@@ -17,44 +18,44 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  // Handle Booking: NOW USES WHATSAPP INSTEAD OF STRIPE
-  const handleBooking = (tourId: string, date?: Date, time?: string, guests?: number) => {
+  // Handle Booking: creates a pending reservation and redirects to Stripe checkout
+  const handleBooking = async (tourId: string, date?: Date, time?: string, guests?: number) => {
     const tour = TOURS.find(t => t.id === tourId);
     if (tour) {
-        // If we have date data, construct the WhatsApp message
-        if (date && time && guests) {
-            
-            const dateStr = date.toISOString().split('T')[0];
-            
-            // CLEAN ID GENERATION
-            let rawStartTime = time.split(' - ')[0].trim(); 
-            const timeStr = rawStartTime.replace(/[^a-zA-Z0-9]/g, ''); 
-            
-            // Format: TOURID_YYYY-MM-DD_TIME_GUESTS
-            const refId = `${tourId}_${dateStr}_${timeStr}_${guests}`;
-            const totalPrice = tour.price * guests;
-
-            // Construct WhatsApp Message
-            const message = `Ola! I would like to request a booking:
-            
-Tour: ${tour.title}
-Date: ${date.toLocaleDateString()}
-Time: ${time}
-Guests: ${guests}
-Total Price: €${totalPrice}
-
-Reference ID: ${refId}
-(Waiting for payment link)`;
-
-            const whatsappUrl = `https://wa.me/351925464464?text=${encodeURIComponent(message)}`;
-
-            console.log("🚀 OPENING WHATSAPP:", whatsappUrl);
-            
-            // Open WhatsApp in new tab
-            window.open(whatsappUrl, '_blank');
-        } else {
-             console.warn("Attempted to book without date selection.");
+        if (!date || !time || !guests) {
+          console.warn('Attempted to book without date selection.');
+          return;
         }
+
+        const dateStr = date.toISOString().split('T')[0];
+        const rawStartTime = time.split(' - ')[0].trim();
+        const timeStr = rawStartTime.replace(/[^a-zA-Z0-9]/g, '');
+        const reservationRef = `${tourId}_${dateStr}_${timeStr}_${guests}_${Date.now()}`;
+
+        // Create a pending reservation in Supabase so inventory is blocked immediately.
+        // This should later be finalized by a Stripe webhook changing payment_status to "paid".
+        try {
+          await supabase.from('bookings').insert({
+            date: dateStr,
+            tour_id: tourId,
+            guests,
+            payment_status: 'pending',
+            stripe_id: reservationRef,
+          });
+        } catch {
+          // If the insert fails (missing env/db issue), we still let checkout continue.
+        }
+
+        const params = new URLSearchParams({
+          ref: reservationRef,
+          tour: tourId,
+          date: dateStr,
+          time,
+          guests: String(guests),
+        });
+
+        const checkoutUrl = `${tour.checkoutUrl}${tour.checkoutUrl.includes('?') ? '&' : '?'}${params.toString()}`;
+        window.open(checkoutUrl, '_blank');
     }
   };
 
