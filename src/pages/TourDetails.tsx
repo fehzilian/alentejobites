@@ -321,12 +321,12 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         
         {/* Header */}
         <div className="relative border-b border-gray-100 bg-cream overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-48 md:h-56 overflow-hidden">
+            <div className="absolute left-1/2 -translate-x-1/2 top-3 h-28 w-[92%] md:left-auto md:right-10 md:translate-x-0 md:w-2/5 md:h-36 overflow-hidden rounded-2xl">
                 <img src={tour.image} alt={tour.title} className="w-full h-full object-cover opacity-30" />
                 <div className="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/20 to-cream" />
             </div>
-            <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-10 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
-                <div className="flex flex-col gap-2 lg:col-span-8">
+            <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-10">
+                <div className="flex flex-col gap-2">
                     {hasBadges && (
                         <div className="flex gap-2 mb-2">
                             {tour.badges?.map(badge => (
@@ -347,15 +347,6 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                         ))}
                     </div>
                 </div>
-
-                <div className="hidden lg:block lg:col-span-4">
-                    <div
-                        ref={bookingWidgetRef}
-                        className="bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100"
-                    >
-                        <BookingForm />
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -372,7 +363,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 </div>
 
                 {/* Main Content (Center) */}
-                <div className="lg:col-span-11 pb-20">
+                <div className="lg:col-span-8 pb-20">
                     {/* Mobile Info Bar */}
                     <div className="md:hidden flex items-center justify-between text-xs font-bold text-gray-500 bg-gray-50 p-4 rounded-lg mb-8 border border-gray-100">
                         <div className="flex items-center gap-1"><span>⏰</span> {tour.time}</div>
@@ -381,6 +372,14 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                     </div>
 
                     <div className="text-gray-700 max-w-none space-y-10">
+                        <div className="rounded-xl border border-olive/15 bg-cream/40 p-5 md:p-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Duration</p><p className="text-base font-semibold text-charcoal">3 hours</p></div>
+                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Distance</p><p className="text-base font-semibold text-charcoal">Easy 1.5 km walk</p></div>
+                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Group Size</p><p className="text-base font-semibold text-charcoal">Up to 12 guests</p></div>
+                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Start Time</p><p className="text-base font-semibold text-charcoal">5:00 PM - 8:00 PM</p></div>
+                            </div>
+                        </div>
                         <div>
                             <h3 className="font-serif text-3xl md:text-4xl text-olive mb-5">The Experience</h3>
                             <div className="space-y-5 text-lg leading-8">
@@ -447,6 +446,14 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                             </div>
                         </div>
 
+                        <div
+                            ref={bookingWidgetRef}
+                            className="rounded-xl border border-gray-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)]"
+                            id="book"
+                        >
+                            <BookingForm />
+                        </div>
+
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <h4 className="font-serif text-xl text-olive">Experience Gallery</h4>
@@ -479,6 +486,23 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                                 ))}
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Desktop Calendar Sidebar (Right) */}
+                <div className="hidden lg:block lg:col-span-3">
+                    <div className="sticky top-28 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                        <p className="text-xs font-bold text-olive uppercase tracking-wide mb-3">Availability Calendar</p>
+                        <Calendar
+                            selectedDate={selectedDate}
+                            onDateSelect={(date) => {
+                                setSelectedDate(date);
+                                const spots = getSpotsLeft(date);
+                                if (guests > spots) setGuests(1);
+                            }}
+                            availability={availability}
+                            maxCapacity={tour.maxCapacity}
+                        />
                     </div>
                 </div>
             </div>
