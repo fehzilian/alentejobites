@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Page } from '../types.ts';
-import { BLOG_POSTS, TOURS } from '../data.tsx';
+import { BLOG_POSTS, TOURS, getBlogPath } from '../data.tsx';
 import { Button, Section, SectionTitle } from '../components/UI.tsx';
 import { SEO } from '../components/SEO.tsx';
 
@@ -53,7 +53,7 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
             {BLOG_POSTS.slice(0, 5).map((post) => (
                 <a
                     key={post.id}
-                    href={`/blog/${post.id}`}
+                    href={getBlogPath(post)}
                     className="group cursor-pointer flex gap-4 items-start"
                     onClick={(event) => {
                       if (
@@ -90,8 +90,7 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
-  const [showLaunchBanner, setShowLaunchBanner] = useState(false);
-  const [heroVideoSrc, setHeroVideoSrc] = useState('/home-hero.mp4');
+  const [showLaunchBanner] = useState(true);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -123,7 +122,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
         // Autoplay can be blocked by browser policies; keep component stable.
       });
     }
-  }, [heroVideoSrc]);
+  }, []);
+
+  const handleCapitalCultureClick = () => {
+    window.open('https://evora2027.pt/en', '_blank', 'noopener,noreferrer');
+  };
+
   
   const faqs = [
     {
@@ -193,24 +197,19 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       />
 
       {/* Hero Section */}
-      <div className="relative h-[95vh] w-full overflow-hidden flex items-center justify-center text-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-olive/55 to-charcoal/40 z-10" />
-        <video 
+      <div className="relative h-[88vh] md:h-screen w-full overflow-hidden flex items-center justify-center text-center">
+        <video
           ref={heroVideoRef}
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
+          autoPlay
+          muted
+          loop
+          playsInline
           preload="metadata"
-          onError={() => {
-            if (heroVideoSrc !== 'https://cdn.coverr.co/videos/coverr-tourists-walking-around-the-city-9477/1080p.mp4') {
-              setHeroVideoSrc('https://cdn.coverr.co/videos/coverr-tourists-walking-around-the-city-9477/1080p.mp4');
-            }
-          }}
           className="absolute inset-0 w-full h-full object-cover z-0"
         >
-             <source src={heroVideoSrc} type="video/mp4" />
+          <source src="/home-hero.mp4" type="video/mp4" />
         </video>
+        <div className="absolute inset-0 bg-gradient-to-br from-olive/55 to-charcoal/45 z-10" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-olive/30 to-terracotta/70 z-10" />
 
         <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
@@ -290,23 +289,15 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
                          <div className="group text-center md:text-left">
                              <div className="overflow-hidden rounded-xl shadow-md mb-4 h-40">
                                   <img 
-                                     src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&h=400&fit=crop" 
+                                     src="https://viajealsabor.cl/wp-content/uploads/2024/01/Taste-1-933x1024.jpg" 
                                      alt="Food" 
-                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                                     className="w-full h-full object-contain bg-white transition-transform duration-500 group-hover:scale-105" 
                                   />
                              </div>
                              <h3 className="font-serif text-lg font-bold text-olive mb-2">A Region Worth Discovering</h3>
                              <p className="text-gray-600 text-xs leading-relaxed">
                                  Alentejo is often considered Portugal’s best-kept culinary secret — recognized by TasteAtlas as one of the world’s top regions for food, authenticity, and tradition.
                              </p>
-                             <div className="mt-3 flex justify-center md:justify-start">
-                                 <img
-                                     src="https://www.tasteatlas.com/images/logo.svg"
-                                     alt="TasteAtlas"
-                                     className="h-6 w-auto opacity-90"
-                                     loading="lazy"
-                                 />
-                             </div>
                          </div>
                       </div>
                   </div>

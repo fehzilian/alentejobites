@@ -41,6 +41,18 @@ export const TOURS: Tour[] = [
   }
 ];
 
+
+export const toBlogSlug = (title: string): string =>
+  title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+export const getBlogPath = (post: Pick<BlogPost, 'id' | 'title'>): string =>
+  `/blog/${post.id}-${toBlogSlug(post.title)}`;
+
 // --- BLOG POSTS DATA (Includes Guides now) ---
 export const BLOG_POSTS: BlogPost[] = [
     {

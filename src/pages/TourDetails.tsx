@@ -3,7 +3,6 @@ import { Page, Tour } from '../types.ts';
 import { TOURS } from '../data.tsx';
 import { Button, Section, Drawer } from '../components/UI.tsx';
 import { SEO } from '../components/SEO.tsx';
-import { SocialShare } from '../components/SocialShare.tsx';
 import { Calendar } from '../components/Calendar.tsx';
 import { supabase } from '../lib/supabase.ts';
 
@@ -38,19 +37,6 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
   const pickupPointMapUrl = (import.meta as any).env?.VITE_PICKUP_POINT_MAP_URL || 'https://www.google.com/maps/@38.5727858,-7.9077529,3a,75y,340.51h,75.38t/data=!3m7!1e1!3m5!1sOqUp7qnpAl4IfCwkrSQ4jA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D14.618325672120633%26panoid%3DOqUp7qnpAl4IfCwkrSQ4jA%26yaw%3D340.51222839321315!7i16384!8i8192?hl=en-US&entry=ttu&g_ep=EgoyMDI2MDIxNy4wIKXMDSoASAFQAw%3D%3D';
   const pickupPointEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(pickupPointLabel)}&z=18&output=embed`;
 
-  const heroStats = isEvening
-    ? [
-        { label: 'Duration', value: '3 hours' },
-        { label: 'Distance', value: 'Easy 1.5 km walk' },
-        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
-        { label: 'Start Time', value: tour.time },
-      ]
-    : [
-        { label: 'Duration', value: '3 hours' },
-        { label: 'Distance', value: 'Easy 1.3 km walk' },
-        { label: 'Group Size', value: `Up to ${tour.maxCapacity} guests` },
-        { label: 'Start Time', value: tour.time },
-      ];
 
   const storyIntro = isEvening
     ? [
@@ -325,13 +311,11 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         <SEO title={seoData.title} description={seoData.desc} />
         
         {/* Header */}
-        <div className="relative border-b border-gray-100 bg-cream overflow-hidden">
-            <div className="absolute left-1/2 -translate-x-1/2 top-3 h-28 w-[92%] md:left-auto md:right-10 md:translate-x-0 md:w-2/5 md:h-36 overflow-hidden rounded-2xl">
-                <img src={tour.image} alt={tour.title} className="w-full h-full object-cover opacity-30" />
-                <div className="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/20 to-cream" />
-            </div>
-            <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-10">
-                <div className="flex flex-col gap-2">
+        <div className="relative border-b border-gray-100 overflow-hidden h-[34vh] md:h-[40vh]">
+            <img src={tour.image} alt={tour.title} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-charcoal/65 via-charcoal/35 to-charcoal/75" />
+            <div className="relative max-w-6xl mx-auto px-4 h-full flex items-end pb-8 md:pb-10">
+                <div className="flex flex-col gap-2 text-white">
                     {hasBadges && (
                         <div className="flex gap-2 mb-2">
                             {tour.badges?.map(badge => (
@@ -341,16 +325,8 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                             ))}
                         </div>
                     )}
-                    <h1 className="font-serif text-4xl md:text-6xl text-charcoal font-bold leading-tight">{tour.title}</h1>
-                    <p className="text-2xl text-gray-600 italic font-serif">{tour.tagline}</p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-                        {heroStats.map((stat) => (
-                            <div key={stat.label} className="bg-white/90 border border-olive/10 rounded-lg px-4 py-3 shadow-sm">
-                                <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">{stat.label}</p>
-                                <p className="text-sm md:text-base text-charcoal font-semibold">{stat.value}</p>
-                            </div>
-                        ))}
-                    </div>
+                    <h1 className="font-serif text-4xl md:text-6xl text-white font-bold leading-tight">{tour.title}</h1>
+                    <p className="text-2xl text-cream italic font-serif">{tour.tagline}</p>
                 </div>
             </div>
         </div>
@@ -358,17 +334,9 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         {/* Main Content Grid */}
         <Section className="!py-10">
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 relative">
-                
-                {/* Desktop Social Share (Left Sidebar) */}
-                <div className="hidden lg:block lg:col-span-1">
-                    <div className="sticky top-32 flex flex-col items-center">
-                        <span className="text-[10px] text-gray-400 uppercase tracking-widest rotate-180 mb-4 writing-vertical-lr">Share</span>
-                        <SocialShare title={tour.title} />
-                    </div>
-                </div>
 
                 {/* Main Content (Center) */}
-                <div className="lg:col-span-8 pb-20">
+                <div className="lg:col-span-9 pb-20">
                     {/* Mobile Info Bar */}
                     <div className="md:hidden flex items-center justify-between text-xs font-bold text-gray-500 bg-gray-50 p-4 rounded-lg mb-8 border border-gray-100">
                         <div className="flex items-center gap-1"><span>⏰</span> {tour.time}</div>
@@ -377,12 +345,13 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                     </div>
 
                     <div className="text-gray-700 max-w-none space-y-10">
-                        <div className="rounded-xl border border-olive/15 bg-cream/40 p-5 md:p-6">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Duration</p><p className="text-base font-semibold text-charcoal">3 hours</p></div>
-                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Distance</p><p className="text-base font-semibold text-charcoal">Easy 1.5 km walk</p></div>
-                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Group Size</p><p className="text-base font-semibold text-charcoal">Up to 12 guests</p></div>
-                                <div><p className="text-xs uppercase tracking-wide text-gray-500">Start Time</p><p className="text-base font-semibold text-charcoal">5:00 PM - 8:00 PM</p></div>
+                        <div className="rounded-xl border border-olive/15 bg-cream/40 p-4 md:p-5">
+                            <p className="text-[11px] uppercase tracking-widest text-olive font-bold mb-3">Quick Summaries</p>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-700">
+                                <p><span className="font-semibold text-charcoal">Duration:</span> 3 hours</p>
+                                <p><span className="font-semibold text-charcoal">Distance:</span> {isEvening ? 'Easy 1.5 km walk' : 'Easy 1.3 km walk'}</p>
+                                <p><span className="font-semibold text-charcoal">Group Size:</span> Up to {tour.maxCapacity} guests</p>
+                                <p><span className="font-semibold text-charcoal">Start Time:</span> {tour.time}</p>
                             </div>
                         </div>
                         <div>
@@ -451,14 +420,6 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                             </div>
                         </div>
 
-                        <div
-                            ref={bookingWidgetRef}
-                            className="rounded-xl border border-gray-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)]"
-                            id="book"
-                        >
-                            <BookingForm />
-                        </div>
-
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <h4 className="font-serif text-xl text-olive">Experience Gallery</h4>
@@ -496,18 +457,8 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
                 {/* Desktop Calendar Sidebar (Right) */}
                 <div className="hidden lg:block lg:col-span-3">
-                    <div className="sticky top-28 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-                        <p className="text-xs font-bold text-olive uppercase tracking-wide mb-3">Availability Calendar</p>
-                        <Calendar
-                            selectedDate={selectedDate}
-                            onDateSelect={(date) => {
-                                setSelectedDate(date);
-                                const spots = getSpotsLeft(date);
-                                if (guests > spots) setGuests(1);
-                            }}
-                            availability={availability}
-                            maxCapacity={tour.maxCapacity}
-                        />
+                    <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                        <BookingForm />
                     </div>
                 </div>
             </div>

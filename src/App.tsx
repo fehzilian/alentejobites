@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Tour } from './types.ts';
-import { TOURS } from './data.tsx';
+import { TOURS, BLOG_POSTS, getBlogPath, toBlogSlug } from './data.tsx';
 import { Layout } from './components/Layout.tsx';
 import { Home } from './pages/Home.tsx';
 import { TourDetails } from './pages/TourDetails.tsx';
@@ -27,7 +27,8 @@ const App: React.FC = () => {
 
   const getPathForPage = (page: Page, blogPostId?: number | null): string => {
     if (page === Page.BLOG && blogPostId) {
-      return `/blog/${blogPostId}`;
+      const post = BLOG_POSTS.find((item) => item.id === blogPostId);
+      return post ? getBlogPath(post) : `/blog/${blogPostId}`;
     }
     return PAGE_PATHS[page] || '/';
   };
@@ -36,10 +37,18 @@ const App: React.FC = () => {
     const normalizedPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
 
     if (normalizedPath.startsWith('/blog/')) {
-      const possibleId = Number(normalizedPath.split('/')[2]);
+      const segment = normalizedPath.split('/')[2] || '';
+      const [idCandidate] = segment.split('-');
+      const possibleId = Number(idCandidate);
+
+      if (Number.isFinite(possibleId)) {
+        return { page: Page.BLOG, blogPostId: possibleId };
+      }
+
+      const postBySlug = BLOG_POSTS.find((post) => toBlogSlug(post.title) === segment);
       return {
         page: Page.BLOG,
-        blogPostId: Number.isFinite(possibleId) ? possibleId : null,
+        blogPostId: postBySlug?.id ?? null,
       };
     }
 
