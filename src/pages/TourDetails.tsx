@@ -278,7 +278,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                   className={`py-4 text-lg shadow-xl transition-all 
                       ${(isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0)
                           ? 'opacity-50 cursor-not-allowed bg-gray-300 hover:bg-gray-300 shadow-none' 
-                          : 'hover:shadow-2xl hover:-translate-y-1 bg-[#25D366] hover:bg-[#128C7E] border-transparent'
+                          : 'hover:shadow-2xl hover:-translate-y-1 bg-olive hover:bg-charcoal border-transparent'
                       }
                   `}
               >
@@ -290,7 +290,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 <span className="inline-flex items-center rounded-md border border-[#635BFF]/20 bg-[#635BFF]/10 px-2 py-0.5 text-[#635BFF] font-semibold tracking-wide">
                   stripe
                 </span>
-                <span>Secure payment. Spots are reserved immediately.</span>
+                <span>Secure payment via Stripe. Spots are reserved immediately.</span>
             </p>
 
             <a
@@ -527,7 +527,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                   }
                   setIsMobileDrawerOpen(true);
                 }}
-                className="!px-8 shadow-lg"
+                className="!px-8 shadow-lg bg-olive hover:bg-charcoal border-transparent"
              >
                  {selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Check Availability'}
              </Button>
