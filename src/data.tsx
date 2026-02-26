@@ -2,9 +2,9 @@ import React from 'react';
 import { Page, Tour, BlogPost } from './types.ts';
 
 const eveningCheckoutUrl =
-  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_EVENING || '';
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_EVENING || 'https://example.com/checkout/evening';
 const brunchCheckoutUrl =
-  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_BRUNCH || '';
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_BRUNCH || 'https://example.com/checkout/brunch';
 
 // --- TOURS DATA ---
 export const TOURS: Tour[] = [
