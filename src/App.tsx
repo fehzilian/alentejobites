@@ -10,9 +10,87 @@ import { SEO } from './components/SEO.tsx';
 import { supabase } from './lib/supabase.ts';
 
 const App: React.FC = () => {
+  const PAGE_PATHS: Record<Page, string> = {
+    [Page.HOME]: '/',
+    [Page.ABOUT]: '/about',
+    [Page.EVENING_TOUR]: '/tours/evening-bites',
+    [Page.BRUNCH_TOUR]: '/tours/morning-bites',
+    [Page.PRIVATE]: '/private-tours',
+    [Page.TRANSFER]: '/transfer',
+    [Page.CORPORATE]: '/corporate',
+    [Page.CONTACT]: '/contact',
+    [Page.TERMS]: '/terms',
+    [Page.CANCELLATION]: '/cancellation',
+    [Page.COMPLAINTS]: '/complaints',
+    [Page.BLOG]: '/blog',
+  };
+
+  const getPathForPage = (page: Page, blogPostId?: number | null): string => {
+    if (page === Page.BLOG && blogPostId) {
+      return `/blog/${blogPostId}`;
+    }
+    return PAGE_PATHS[page] || '/';
+  };
+
+  const getRouteStateFromPath = (pathname: string): { page: Page; blogPostId: number | null } => {
+    const normalizedPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+    if (normalizedPath.startsWith('/blog/')) {
+      const possibleId = Number(normalizedPath.split('/')[2]);
+      return {
+        page: Page.BLOG,
+        blogPostId: Number.isFinite(possibleId) ? possibleId : null,
+      };
+    }
+
+    const foundEntry = Object.entries(PAGE_PATHS).find(([, path]) => path === normalizedPath);
+    return {
+      page: (foundEntry?.[0] as Page) || Page.HOME,
+      blogPostId: null,
+    };
+  };
+
+  const getPageFromPath = (pathname: string): Page => {
+    return getRouteStateFromPath(pathname).page;
+  };
+
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [selectedBlogPostId, setSelectedBlogPostId] = useState<number | null>(null);
+
+  const navigateTo = (page: Page, options?: { replace?: boolean }) => {
+    const nextBlogPostId = page === Page.BLOG ? selectedBlogPostId : null;
+    if (page !== Page.BLOG && selectedBlogPostId !== null) {
+      setSelectedBlogPostId(null);
+    }
+
+    setCurrentPage(page);
+    const targetPath = getPathForPage(page, nextBlogPostId);
+    const currentPath = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
+
+    if (currentPath !== targetPath) {
+      if (options?.replace) {
+        window.history.replaceState({}, '', targetPath);
+      } else {
+        window.history.pushState({}, '', targetPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const initialRoute = getRouteStateFromPath(window.location.pathname);
+    setCurrentPage(initialRoute.page);
+    setSelectedBlogPostId(initialRoute.blogPostId);
+
+    const handlePopState = () => {
+      const route = getRouteStateFromPath(window.location.pathname);
+      setCurrentPage(route.page);
+      setSelectedBlogPostId(route.blogPostId);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -60,7 +138,7 @@ const App: React.FC = () => {
   };
 
   const handleNavigateToBooking = (tourId: string, tourPage: Page) => {
-      setCurrentPage(tourPage);
+      navigateTo(tourPage);
       // Wait for page render then scroll
       setTimeout(() => {
           window.location.hash = '#book';
@@ -69,17 +147,27 @@ const App: React.FC = () => {
   };
 
   const handleBlogNavigation = (postId?: number) => {
-      if (postId) setSelectedBlogPostId(postId);
-      else setSelectedBlogPostId(null);
-      setCurrentPage(Page.BLOG);
+      if (postId) {
+        setSelectedBlogPostId(postId);
+        setCurrentPage(Page.BLOG);
+        const targetPath = getPathForPage(Page.BLOG, postId);
+        const currentPath = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
+        if (currentPath !== targetPath) {
+          window.history.pushState({}, '', targetPath);
+        }
+        return;
+      }
+
+      setSelectedBlogPostId(null);
+      navigateTo(Page.BLOG);
   };
 
   const renderPage = () => {
     switch (currentPage) {
       case Page.HOME:
         return (
-            <Home 
-                onNavigate={setCurrentPage} 
+                <Home 
+                onNavigate={navigateTo} 
                 onBook={(tourId) => {
                      const tour = TOURS.find(t => t.id === tourId);
                      if(tour) handleNavigateToBooking(tourId, tour.page);
@@ -88,26 +176,26 @@ const App: React.FC = () => {
             />
         );
       case Page.EVENING_TOUR:
-        return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="evening" />;
+        return <TourDetails onNavigate={navigateTo} onBook={handleBooking} tourId="evening" />;
       case Page.BRUNCH_TOUR:
-        return <TourDetails onNavigate={setCurrentPage} onBook={handleBooking} tourId="brunch" />;
+        return <TourDetails onNavigate={navigateTo} onBook={handleBooking} tourId="brunch" />;
       case Page.ABOUT:
-        return <AboutPage onNavigate={setCurrentPage} onBlogClick={handleBlogNavigation} />;
+        return <AboutPage onNavigate={navigateTo} onBlogClick={handleBlogNavigation} />;
       case Page.CONTACT:
         return <ContactPage />;
       case Page.BLOG:
-        return <BlogPage onNavigate={setCurrentPage} initialPostId={selectedBlogPostId} />;
+        return <BlogPage onNavigate={navigateTo} initialPostId={selectedBlogPostId} />;
       case Page.TERMS: return <TermsPage />;
       case Page.CANCELLATION: return <CancellationPage />;
       case Page.COMPLAINTS: return <TextPage title="Complaints"><p>Redirecting to Complaints Book...</p></TextPage>;
-      default: return <Home onNavigate={setCurrentPage} onBook={handleBooking} />;
+      default: return <Home onNavigate={navigateTo} onBook={handleBooking} />;
     }
   };
 
   return (
     <Layout 
         activePage={currentPage} 
-        onNavigate={setCurrentPage} 
+        onNavigate={navigateTo} 
         onBookClick={() => setActiveModal('booking_selection')}
     >
       {renderPage()}

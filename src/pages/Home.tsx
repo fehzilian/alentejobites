@@ -51,10 +51,23 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
         <div className="space-y-6">
             {/* Show only first 5 posts in sidebar */}
             {BLOG_POSTS.slice(0, 5).map((post) => (
-                <div 
-                    key={post.id} 
+                <a
+                    key={post.id}
+                    href={`/blog/${post.id}`}
                     className="group cursor-pointer flex gap-4 items-start"
-                    onClick={() => onBlogClick && onBlogClick(post.id)}
+                    onClick={(event) => {
+                      if (
+                        event.button !== 0 ||
+                        event.metaKey ||
+                        event.ctrlKey ||
+                        event.shiftKey ||
+                        event.altKey
+                      ) {
+                        return;
+                      }
+                      event.preventDefault();
+                      onBlogClick && onBlogClick(post.id);
+                    }}
                 >
                     <img src={post.image} alt={post.title} className="w-20 h-20 object-cover rounded-lg group-hover:opacity-80 transition-opacity" />
                     <div>
@@ -63,7 +76,7 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
                             {post.title}
                         </h4>
                     </div>
-                </div>
+                </a>
             ))}
         </div>
         <button 
@@ -185,11 +198,15 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
         >
              <source src={heroVideoSrc} type="video/mp4" />
         </video>
-        
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-olive/30 to-terracotta/70 z-10" />
+
         <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
-          <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn">
+          <button
+            onClick={handleCapitalCultureClick}
+            className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn hover:bg-white/30 transition-colors"
+          >
             Évora 2027 — European Capital of Culture
-          </div>
+          </button>
           <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 leading-tight drop-shadow-lg">
             Évora Walking Food & Wine Experiences
           </h1>
@@ -209,12 +226,12 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       </div>
 
       {/* Launch Banner */}
-      <div className="bg-gradient-to-r from-terracotta to-olive text-white py-12 px-6">
+      <div className={`bg-gradient-to-b from-terracotta/90 via-terracotta to-olive text-white py-12 px-6 transition-all duration-700 ${showLaunchBanner ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}`}>
         <div className="max-w-4xl mx-auto text-center">
             <h3 className="font-serif text-3xl font-bold mb-3">Launch Offer (Founding Member Price)</h3>
             <p className="mb-6 opacity-90">Book now and enjoy our special launch pricing — the same full experience, for less.</p>
             <div className="inline-block bg-white/20 border-2 border-white/40 px-6 py-3 rounded-full font-bold text-lg backdrop-blur-sm">
-                🍷 Evening Bites €59 (Reg €69) | ☕ Brunch Bites €49 (Reg €59)
+                🍷 Evening Bites €59 (Reg €69) | ☕ Morning Bites €49 (Reg €59)
             </div>
             <p className="mt-4 text-sm opacity-75">⏳ Launch pricing ends March 31, 2026</p>
         </div>
@@ -269,6 +286,14 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
                              <p className="text-gray-600 text-xs leading-relaxed">
                                  Alentejo is often considered Portugal’s best-kept culinary secret — recognized by TasteAtlas as one of the world’s top regions for food, authenticity, and tradition.
                              </p>
+                             <div className="mt-3 flex justify-center md:justify-start">
+                                 <img
+                                     src="https://www.tasteatlas.com/images/logo.svg"
+                                     alt="TasteAtlas"
+                                     className="h-6 w-auto opacity-90"
+                                     loading="lazy"
+                                 />
+                             </div>
                          </div>
                       </div>
                   </div>
@@ -294,9 +319,9 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
             {TOURS.map((tour) => (
                 <div key={tour.id} className="bg-cream rounded-3xl overflow-hidden shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group flex flex-col">
                     {/* Clickable Image Area */}
-                    <div 
-                        className="relative h-64 overflow-hidden shrink-0 cursor-pointer"
-                        onClick={() => onNavigate(tour.page)}
+                    <a
+                        className="relative h-64 overflow-hidden shrink-0 cursor-pointer block"
+                        href={tour.page === Page.EVENING_TOUR ? '/tours/evening-bites' : '/tours/morning-bites'}
                     >
                         {tour.badges && tour.badges.includes("Most Popular") && (
                             <div className="absolute top-4 left-4 bg-gold text-white px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-wide z-10 shadow-lg">
@@ -307,17 +332,17 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
                             Founding Price
                         </div>
                         <img src={tour.image} alt={tour.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                    </div>
+                    </a>
                     
                     <div className="p-8 flex flex-col flex-grow">
                         <div className="mb-4">
                             {/* Clickable Title with Classic Underline Hover (decoration-2) */}
-                            <h3 
-                                className="font-serif text-2xl text-olive mb-2 leading-tight cursor-pointer hover:underline decoration-terracotta decoration-2 underline-offset-4 transition-all"
-                                onClick={() => onNavigate(tour.page)}
+                            <a
+                                className="font-serif text-2xl text-olive mb-2 leading-tight cursor-pointer hover:underline decoration-terracotta decoration-2 underline-offset-4 transition-all block"
+                                href={tour.page === Page.EVENING_TOUR ? '/tours/evening-bites' : '/tours/morning-bites'}
                             >
                                 {tour.title}
-                            </h3>
+                            </a>
                             <p className="text-terracotta italic text-sm mb-4">{tour.tagline}</p>
                             <div className="flex items-center gap-2 text-sm text-gray-500 font-medium bg-white inline-block px-3 py-1 rounded-md border border-gray-200">
                                 <span>⏰ {tour.time}</span>
@@ -400,18 +425,23 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
             {/* Trusted Platforms */}
             <div className="text-center max-w-4xl mx-auto">
                 <h4 className="font-serif text-2xl text-gray-600 mb-8">Trusted by Travelers</h4>
-                <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16">
-                    {/* TripAdvisor */}
-                    <div className="group cursor-pointer transition-all duration-300 opacity-60 hover:opacity-100 grayscale hover:grayscale-0 hover:scale-105">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/TripAdvisor_Logo.svg" alt="TripAdvisor" className="h-10 w-auto"/>
+                <div className="relative max-w-3xl mx-auto">
+                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 opacity-60">
+                        {/* TripAdvisor */}
+                        <div className="group cursor-pointer transition-all duration-300 grayscale hover:grayscale-0 hover:scale-105">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/TripAdvisor_Logo.svg" alt="TripAdvisor" className="h-10 w-auto"/>
+                        </div>
+                        {/* GetYourGuide */}
+                        <div className="group cursor-pointer transition-all duration-300 grayscale hover:grayscale-0 hover:scale-105">
+                        <img src="https://www.vhv.rs/dpng/d/611-6116095_getyourguide-logo-logo-get-your-guide-hd-png.png" alt="GetYourGuide" className="h-12 w-auto object-contain"/>
+                        </div>
+                        {/* Airbnb */}
+                        <div className="group cursor-pointer transition-all duration-300 grayscale hover:grayscale-0 hover:scale-105">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg" alt="Airbnb" className="h-9 w-auto"/>
+                        </div>
                     </div>
-                    {/* GetYourGuide */}
-                    <div className="group cursor-pointer transition-all duration-300 opacity-60 hover:opacity-100 grayscale hover:grayscale-0 hover:scale-105">
-                    <img src="https://www.vhv.rs/dpng/d/611-6116095_getyourguide-logo-logo-get-your-guide-hd-png.png" alt="GetYourGuide" className="h-12 w-auto object-contain"/>
-                    </div>
-                    {/* Airbnb */}
-                    <div className="group cursor-pointer transition-all duration-300 opacity-60 hover:opacity-100 grayscale hover:grayscale-0 hover:scale-105">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg" alt="Airbnb" className="h-9 w-auto"/>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="px-5 py-2 rounded-full border border-white/60 bg-charcoal/45 backdrop-blur-sm text-white text-xs md:text-sm tracking-[0.2em] uppercase font-semibold">Under Implementation</span>
                     </div>
                 </div>
             </div>

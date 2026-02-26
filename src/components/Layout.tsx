@@ -10,11 +10,34 @@ interface LayoutProps {
   onBookClick: () => void;
 }
 
+const PAGE_HREFS: Record<Page, string> = {
+  [Page.HOME]: '/',
+  [Page.ABOUT]: '/about',
+  [Page.EVENING_TOUR]: '/tours/evening-bites',
+  [Page.BRUNCH_TOUR]: '/tours/morning-bites',
+  [Page.PRIVATE]: '/private-tours',
+  [Page.TRANSFER]: '/transfer',
+  [Page.CORPORATE]: '/corporate',
+  [Page.CONTACT]: '/contact',
+  [Page.TERMS]: '/terms',
+  [Page.CANCELLATION]: '/cancellation',
+  [Page.COMPLAINTS]: '/complaints',
+  [Page.BLOG]: '/blog',
+};
+
 export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate, onBookClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [logoSrc, setLogoSrc] = useState('/logo.png');
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
+  const [certSrc, setCertSrc] = useState('https://www.dgae.gov.pt/upload/SGMEE_5106/imagens/i010730.png');
+  const [certImgError, setCertImgError] = useState(false);
+
+  const handleCookieConsent = (choice: 'essential_only' | 'accepted') => {
+    localStorage.setItem('cookie-consent', choice);
+    setShowCookieBanner(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +45,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const consent = localStorage.getItem('cookie-consent');
+    setShowCookieBanner(!consent);
   }, []);
 
   useEffect(() => {
@@ -89,6 +117,13 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const getNavHref = (item: { label: string; page: Page }) => {
+    if (item.label === 'Tours') {
+      return '/#tours-section';
+    }
+    return PAGE_HREFS[item.page] || '/';
+  };
+
   const navItems = [
     { label: 'Tours', page: Page.HOME }, // Changed from Home to Tours
     { label: 'About Us', page: Page.ABOUT },
@@ -109,9 +144,22 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           {/* Logo */}
-          <div 
+          <a
+            href="/"
             className="cursor-pointer transition-transform hover:scale-105"
-            onClick={handleLogoClick}
+            onClick={(event) => {
+              if (
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              ) {
+                return;
+              }
+              event.preventDefault();
+              handleLogoClick();
+            }}
           >
             <div className="flex items-center">
                 {/* Logo Image - Requires logo.png in the same folder */}
@@ -130,20 +178,33 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
                     </div>
                 )}
             </div>
-          </div>
+          </a>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item.label}
-                onClick={() => handleNavClick(item)}
+                href={getNavHref(item)}
+                onClick={(event) => {
+                  if (
+                    event.button !== 0 ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  ) {
+                    return;
+                  }
+                  event.preventDefault();
+                  handleNavClick(item);
+                }}
                 className={`text-sm font-medium tracking-wide hover:text-terracotta transition-colors ${
                   !isScrolled && activePage === Page.HOME ? 'text-white drop-shadow-sm' : 'text-charcoal'
                 }`}
               >
                 {item.label}
-              </button>
+              </a>
             ))}
             <Button 
               onClick={onBookClick}
@@ -169,13 +230,26 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
         {isMobileMenuOpen && (
           <div className="absolute top-full left-0 w-full bg-cream shadow-xl border-t border-gold/20 flex flex-col p-6 md:hidden gap-4 animate-slideDown">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item.label}
-                onClick={() => handleNavClick(item)}
+                href={getNavHref(item)}
+                onClick={(event) => {
+                  if (
+                    event.button !== 0 ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  ) {
+                    return;
+                  }
+                  event.preventDefault();
+                  handleNavClick(item);
+                }}
                 className="text-left text-lg py-2 border-b border-gray-100 text-olive"
               >
                 {item.label}
-              </button>
+              </a>
             ))}
             <Button onClick={() => { onBookClick(); setIsMobileMenuOpen(false); }} fullWidth>
               Book Now
@@ -188,6 +262,36 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
       <main className="flex-grow">
         {children}
       </main>
+
+      {showCookieBanner && (
+        <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 md:px-6 md:pb-6">
+          <div className="mx-auto max-w-5xl rounded-2xl border border-olive/20 bg-cream/95 backdrop-blur shadow-2xl p-4 md:p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 className="font-serif text-lg text-olive">Cookie notice</h3>
+                <p className="text-sm text-gray-700 leading-relaxed max-w-3xl">
+                  We use cookies and similar technologies to keep the website working and to measure visits with Google Analytics and Meta Pixel.
+                  You can accept analytics cookies or continue with essential cookies only.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                <button
+                  onClick={() => handleCookieConsent('essential_only')}
+                  className="rounded-lg border border-olive/30 px-3 py-2 text-xs md:text-sm font-semibold text-olive hover:bg-white transition-colors"
+                >
+                  Essential only
+                </button>
+                <button
+                  onClick={() => handleCookieConsent('accepted')}
+                  className="rounded-lg bg-olive px-3 py-2 text-xs md:text-sm font-semibold text-white hover:bg-charcoal transition-colors"
+                >
+                  Accept all cookies
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-charcoal text-white pt-16 pb-8 px-6 md:pb-6">
@@ -204,7 +308,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
                     )}
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                    Évora's first and only dedicated walking food tour. Small groups, expert guides, authentic experiences.
+                    Évora's first and only dedicated walking food tour. Small groups, local guides, authentic experiences.
                 </p>
                 {/* Trust Badges */}
                 <div className="flex flex-wrap gap-4 mt-6">
@@ -212,9 +316,27 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
                         <div className="text-[10px] text-gold uppercase font-bold leading-tight">Turismo de Portugal</div>
                         <div className="text-[8px] text-gray-400">RNAAT 123/2026</div>
                     </div>
-                     <div className="bg-white/10 p-2 rounded text-center w-20">
-                        <div className="text-[10px] text-green-400 uppercase font-bold leading-tight">Clean & Safe</div>
-                        <div className="text-[8px] text-gray-400">Certified</div>
+                    <div className="bg-white p-1 rounded-lg w-44 shadow-sm">
+                        {certImgError ? (
+                          <div className="w-full rounded bg-emerald-50 border border-emerald-200 px-2 py-3 text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Clean &amp; Safe</p>
+                            <p className="text-[9px] text-emerald-600 mt-0.5">Certified Hygiene Standards</p>
+                          </div>
+                        ) : (
+                          <img
+                              src={certSrc}
+                              alt="Clean & Safe Certificate"
+                              className="w-full h-auto rounded"
+                              loading="lazy"
+                              onError={() => {
+                                if (certSrc === 'https://www.dgae.gov.pt/upload/SGMEE_5106/imagens/i010730.png') {
+                                  setCertSrc('/clean-safe-certificate.svg');
+                                  return;
+                                }
+                                setCertImgError(true);
+                              }}
+                          />
+                        )}
                     </div>
                 </div>
             </div>
@@ -251,6 +373,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
         <div className="max-w-7xl mx-auto border-t border-gray-700 pt-8 text-center text-gray-500 text-xs">
             <p>© 2026 Alentejo Bites. All rights reserved.</p>
             <p>Registered Tourism Company in Portugal | RNAAT No 1234/2026</p>
+            <p>NIF: PT301201196</p>
         </div>
       </footer>
     </div>
