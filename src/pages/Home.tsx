@@ -91,7 +91,6 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
   const [heroVideoSrc, setHeroVideoSrc] = useState('/home-hero.mp4');
-  const [showLaunchBanner, setShowLaunchBanner] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -112,23 +111,6 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       });
     }
   }, [heroVideoSrc]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowLaunchBanner(window.scrollY > Math.max(220, window.innerHeight * 0.35));
-    };
-
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleCapitalCultureClick = () => {
-    if (onBlogClick) {
-      onBlogClick(2);
-    }
-    onNavigate(Page.BLOG);
-  };
   
   const faqs = [
     {
@@ -198,7 +180,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       />
 
       {/* Hero Section */}
-      <div className="relative h-screen w-full overflow-hidden flex items-center justify-center text-center">
+      <div className="relative h-[95vh] w-full overflow-hidden flex items-center justify-center text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-olive/55 to-charcoal/40 z-10" />
         <video 
           ref={heroVideoRef}
