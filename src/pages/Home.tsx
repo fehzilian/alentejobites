@@ -90,7 +90,6 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
-  const showLaunchBanner = true;
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -123,10 +122,6 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       });
     }
   }, []);
-
-  const handleCapitalCultureClick = () => {
-    window.open('https://evora2027.pt/en', '_blank', 'noopener,noreferrer');
-  };
 
   
   const faqs = [
@@ -214,7 +209,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
 
         <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
           <button
-            onClick={handleCapitalCultureClick}
+            onClick={() => window.open('https://evora2027.pt/en', '_blank', 'noopener,noreferrer')}
             className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn hover:bg-white/30 transition-colors"
           >
             Évora 2027 — European Capital of Culture
@@ -238,7 +233,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       </div>
 
       {/* Launch Banner */}
-      <div className={`bg-gradient-to-b from-terracotta/90 via-terracotta to-olive text-white py-12 px-6 transition-all duration-700 ${showLaunchBanner ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}`}>
+      <div className="bg-gradient-to-b from-terracotta/90 via-terracotta to-olive text-white py-12 px-6 transition-all duration-700 opacity-100 translate-y-0">
         <div className="max-w-4xl mx-auto text-center">
             <h3 className="font-serif text-3xl font-bold mb-3">Launch Offer (Founding Member Price)</h3>
             <p className="mb-6 opacity-90">Book now and enjoy our special launch pricing — the same full experience, for less.</p>
