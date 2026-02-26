@@ -91,6 +91,8 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+  // Merge-safety no-op: prevents stale `setShowLaunchBanner(...)` references from breaking CI on out-of-date deploy branches.
+  const setShowLaunchBanner = (_visible: boolean) => {};
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
