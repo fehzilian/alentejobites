@@ -26,9 +26,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onBlogClick })
                      <div className="relative">
                         <div className="absolute inset-0 bg-gold/10 rounded-xl transform translate-x-3 translate-y-3"></div>
                         <img 
-                            src={FOUNDER_PHOTO_SRC} 
+                            src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&h=400&fit=crop" 
                             alt="Felippe Santos" 
-                            className="w-full h-auto rounded-xl shadow-lg relative z-10"
+                            className="w-full h-auto rounded-xl shadow-lg relative z-10 grayscale hover:grayscale-0 transition-all duration-700" 
                         />
                      </div>
                  </div>

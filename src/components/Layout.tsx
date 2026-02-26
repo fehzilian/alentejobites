@@ -29,6 +29,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [certImgError, setCertImgError] = useState(false);
+  const [certSrc, setCertSrc] = useState('https://www.dgae.gov.pt/upload/SGMEE_5106/imagens/i010730.png');
   const [logoSrc, setLogoSrc] = useState('/logo.png');
 
   useEffect(() => {
