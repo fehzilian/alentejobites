@@ -4,6 +4,27 @@ This is the production-grade flow to keep availability, cancellations/refunds, a
 
 ---
 
+## 0) One-command bootstrap (optional)
+
+You can run:
+
+```bash
+npm run bootstrap:booking
+```
+
+What it does:
+- validates required `VITE_*` vars
+- tests Supabase connectivity against `bookings` table
+- warns for missing backend secrets
+
+To also apply DB automation SQL in one go:
+
+```bash
+SUPABASE_DB_URL=postgresql://... npm run bootstrap:booking -- --apply-sql
+```
+
+---
+
 ## 1) End-to-end flow
 
 1. Frontend creates `pending` booking in Supabase (`bookings` table).
