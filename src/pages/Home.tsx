@@ -95,18 +95,6 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
   const setShowLaunchBanner = (_visible: boolean) => {};
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setShowLaunchBanner(true);
-    }, 200);
-
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  const handleCapitalCultureClick = () => {
-    window.open('https://evora2027.pt/en', '_blank', 'noopener,noreferrer');
-  };
-
-  useEffect(() => {
     const video = heroVideoRef.current;
 
     if (!video) {
@@ -211,7 +199,13 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
 
         <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
           <button
-            onClick={() => window.open('https://evora2027.pt/en', '_blank', 'noopener,noreferrer')}
+            onClick={() => {
+              if (onBlogClick) {
+                onBlogClick(2);
+                return;
+              }
+              onNavigate(Page.BLOG);
+            }}
             className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full border border-white/30 text-sm font-semibold tracking-wider mb-6 animate-fadeIn hover:bg-white/30 transition-colors"
           >
             Évora 2027 — European Capital of Culture
