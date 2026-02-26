@@ -270,22 +270,27 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                 </div>
             </div>
 
-            <Button 
-                fullWidth 
-                onClick={() => onBook(tour.id, selectedDate || undefined, tour.time, guests)} 
-                disabled={isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0}
-                className={`py-4 text-lg shadow-xl transition-all 
-                    ${(isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0)
-                        ? 'opacity-50 cursor-not-allowed bg-gray-300 hover:bg-gray-300 shadow-none' 
-                        : 'hover:shadow-2xl hover:-translate-y-1 bg-[#25D366] hover:bg-[#128C7E] border-transparent'
-                    }
-                `}
-            >
-                {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Choose a Date')}
-            </Button>
+            <div ref={payButtonRef}>
+              <Button 
+                  fullWidth 
+                  onClick={() => onBook(tour.id, selectedDate || undefined, tour.time, guests)} 
+                  disabled={isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0}
+                  className={`py-4 text-lg shadow-xl transition-all 
+                      ${(isLoading || !selectedDate || getSpotsLeft(selectedDate!) === 0)
+                          ? 'opacity-50 cursor-not-allowed bg-gray-300 hover:bg-gray-300 shadow-none' 
+                          : 'hover:shadow-2xl hover:-translate-y-1 bg-[#25D366] hover:bg-[#128C7E] border-transparent'
+                      }
+                  `}
+              >
+                  {isLoading ? 'Checking...' : (selectedDate ? (getSpotsLeft(selectedDate) === 0 ? 'Sold Out' : 'Pay with Stripe') : 'Choose a Date')}
+              </Button>
+            </div>
             
-            <p className="text-[10px] text-gray-400 text-center mt-3 flex items-center justify-center gap-1">
-                Secure payment via Stripe. Spots are reserved immediately.
+            <p className="text-[11px] text-gray-500 text-center mt-3 flex items-center justify-center gap-2">
+                <span className="inline-flex items-center rounded-md border border-[#635BFF]/20 bg-[#635BFF]/10 px-2 py-0.5 text-[#635BFF] font-semibold tracking-wide">
+                  stripe
+                </span>
+                <span>Secure payment. Spots are reserved immediately.</span>
             </p>
 
             <a
