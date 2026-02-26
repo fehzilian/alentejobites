@@ -7,7 +7,7 @@ This is the production-grade flow to keep availability, cancellations/refunds, a
 ## 1) End-to-end flow
 
 1. Frontend creates `pending` booking in Supabase (`bookings` table).
-2. Frontend redirects to Stripe Checkout with metadata (`booking_id`, `tour_id`, `date`, `guests`).
+2. Frontend redirects to Stripe Checkout with metadata/query params (`booking_id`, `tour_id`, `date`, `guests`).
 3. Stripe webhook updates booking status:
    - `checkout.session.completed` -> `paid`
    - `checkout.session.expired` / failed lifecycle -> `cancelled`

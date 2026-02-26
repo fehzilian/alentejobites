@@ -126,19 +126,26 @@ const App: React.FC = () => {
 
         // Create a pending reservation in Supabase so inventory is blocked immediately.
         // This should later be finalized by a Stripe webhook changing payment_status to "paid".
-        try {
-          await supabase.from('bookings').insert({
+        const { data: pendingBooking, error: pendingInsertError } = await supabase
+          .from('bookings')
+          .insert({
             date: dateStr,
             tour_id: tourId,
             guests,
             payment_status: 'pending',
             stripe_id: reservationRef,
-          });
-        } catch {
-          // If the insert fails (missing env/db issue), we still let checkout continue.
+          })
+          .select('id')
+          .single();
+
+        if (pendingInsertError || !pendingBooking?.id) {
+          console.error('Failed to create pending booking in Supabase:', pendingInsertError);
+          window.alert('We could not reserve your spots in our system right now. Please try again in a moment.');
+          return;
         }
 
         const params = new URLSearchParams({
+          booking_id: String(pendingBooking.id),
           ref: reservationRef,
           tour: tourId,
           date: dateStr,
