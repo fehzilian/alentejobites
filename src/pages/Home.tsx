@@ -94,6 +94,18 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setShowLaunchBanner(true);
+    }, 200);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const handleCapitalCultureClick = () => {
+    window.open('https://evora2027.pt/en', '_blank', 'noopener,noreferrer');
+  };
+
+  useEffect(() => {
     const video = heroVideoRef.current;
 
     if (!video) {
