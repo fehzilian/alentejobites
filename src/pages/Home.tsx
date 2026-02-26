@@ -90,7 +90,7 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
 
 export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
-  const [showLaunchBanner] = useState(true);
+  const showLaunchBanner = true;
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {

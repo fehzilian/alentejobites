@@ -345,13 +345,27 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
                     </div>
 
                     <div className="text-gray-700 max-w-none space-y-10">
-                        <div className="rounded-xl border border-olive/15 bg-cream/40 p-4 md:p-5">
-                            <p className="text-[11px] uppercase tracking-widest text-olive font-bold mb-3">Quick Summaries</p>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-700">
-                                <p><span className="font-semibold text-charcoal">Duration:</span> 3 hours</p>
-                                <p><span className="font-semibold text-charcoal">Distance:</span> {isEvening ? 'Easy 1.5 km walk' : 'Easy 1.3 km walk'}</p>
-                                <p><span className="font-semibold text-charcoal">Group Size:</span> Up to {tour.maxCapacity} guests</p>
-                                <p><span className="font-semibold text-charcoal">Start Time:</span> {tour.time}</p>
+                        <div className="rounded-lg border border-olive/15 bg-gradient-to-br from-cream to-white p-2.5 md:p-3 shadow-sm max-w-3xl">
+                            <div className="mb-2.5">
+                                <p className="text-[10px] uppercase tracking-[0.16em] text-olive font-bold">Quick Summaries</p>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] md:text-xs text-gray-700">
+                                <div className="rounded-md border border-olive/15 bg-white p-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-0.5">⏳ Duration</p>
+                                    <p className="font-medium text-charcoal">3 hours</p>
+                                </div>
+                                <div className="rounded-md border border-olive/15 bg-white p-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-0.5">👟 Distance</p>
+                                    <p className="font-medium text-charcoal">{isEvening ? 'Easy 1.5 km walk' : 'Easy 1.3 km walk'}</p>
+                                </div>
+                                <div className="rounded-md border border-olive/15 bg-white p-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-0.5">👥 Group Size</p>
+                                    <p className="font-medium text-charcoal">Up to {tour.maxCapacity} guests</p>
+                                </div>
+                                <div className="rounded-md border border-olive/15 bg-white p-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-0.5">🕒 Start Time</p>
+                                    <p className="font-medium text-charcoal">{tour.time}</p>
+                                </div>
                             </div>
                         </div>
                         <div>
