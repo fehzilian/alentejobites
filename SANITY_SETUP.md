@@ -2,6 +2,8 @@
 
 Este guia mostra como ligar o Sanity ao site do Alentejo Bites **sem quebrar o que já está em produção**.
 
+**Sanity Studio** = o painel administrativo do seu CMS (tipo “backoffice”), onde você cria/edita/publica posts.
+
 > Boa notícia: você **não precisa ser dev avançado em JavaScript** para fazer o básico funcionar.
 
 ---
@@ -31,11 +33,13 @@ Quando ele fizer perguntas, pode usar:
 - TypeScript: pode escolher **Yes** (recomendado) ou No
 - Package manager: npm
 
-No final, você terá uma pasta separada do Studio (ex.: `alentejo-bites-cms`).
+No final, você terá uma pasta separada do **Sanity Studio** (ex.: `alentejo-bites-cms`).
+
+> Em português direto: essa pasta é o **painel de conteúdo** do site. É lá que você entra para escrever e publicar os posts do blog.
 
 ---
 
-## 3) Subir o Sanity Studio
+## 3) Subir o Sanity Studio (painel admin)
 
 Dentro da pasta do Studio:
 
