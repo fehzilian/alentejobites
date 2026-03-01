@@ -2,9 +2,9 @@ import React from 'react';
 import { Page, Tour, BlogPost } from './types.ts';
 
 const eveningCheckoutUrl =
-  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_EVENING || '';
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_EVENING || 'https://example.com/checkout/evening';
 const brunchCheckoutUrl =
-  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_BRUNCH || '';
+  (import.meta as any).env?.VITE_STRIPE_CHECKOUT_BRUNCH || 'https://example.com/checkout/brunch';
 
 // --- TOURS DATA ---
 export const TOURS: Tour[] = [
@@ -40,6 +40,18 @@ export const TOURS: Tour[] = [
     maxCapacity: 10
   }
 ];
+
+
+export const toBlogSlug = (title: string): string =>
+  title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+export const getBlogPath = (post: Pick<BlogPost, 'id' | 'title'>): string =>
+  `/blog/${post.id}-${toBlogSlug(post.title)}`;
 
 // --- BLOG POSTS DATA (Includes Guides now) ---
 export const BLOG_POSTS: BlogPost[] = [
