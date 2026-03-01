@@ -337,13 +337,6 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
 
                 {/* Main Content (Center) */}
                 <div className="lg:col-span-9 pb-28 md:pb-20">
-                    {/* Mobile Info Bar */}
-                    <div className="md:hidden flex items-center justify-between text-xs font-bold text-gray-500 bg-gray-50 p-4 rounded-lg mb-8 border border-gray-100">
-                        <div className="flex items-center gap-1"><span>⏰</span> {tour.time}</div>
-                        <div className="flex items-center gap-1"><span>⏳</span> {tour.duration}</div>
-                        <div className="flex items-center gap-1"><span>👟</span> 1.5km</div>
-                    </div>
-
                     <div className="text-gray-700 max-w-none space-y-10">
                         <div className="rounded-lg border border-olive/15 bg-gradient-to-br from-cream to-white p-2.5 md:p-3 shadow-sm max-w-3xl">
                             <div className="mb-2.5">

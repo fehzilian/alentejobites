@@ -94,6 +94,17 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
   // Merge-safety no-op: prevents stale `setShowLaunchBanner(...)` references from breaking CI on out-of-date deploy branches.
   const setShowLaunchBanner = (_visible: boolean) => {};
 
+  // Merge-safety constants/functions: keep old references compiling on stale deploy branches.
+  const showLaunchBanner = true;
+
+  const handleCapitalCultureClick = () => {
+    if (onBlogClick) {
+      onBlogClick(2);
+      return;
+    }
+    onNavigate(Page.BLOG);
+  };
+
   useEffect(() => {
     const video = heroVideoRef.current;
 
