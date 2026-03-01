@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Tour } from './types.ts';
-import { TOURS } from './data.tsx';
+import { TOURS, BLOG_POSTS, getBlogPath, toBlogSlug } from './data.tsx';
 import { Layout } from './components/Layout.tsx';
 import { Home } from './pages/Home.tsx';
 import { TourDetails } from './pages/TourDetails.tsx';
@@ -27,7 +27,8 @@ const App: React.FC = () => {
 
   const getPathForPage = (page: Page, blogPostId?: number | null): string => {
     if (page === Page.BLOG && blogPostId) {
-      return `/blog/${blogPostId}`;
+      const post = BLOG_POSTS.find((item) => item.id === blogPostId);
+      return post ? getBlogPath(post) : `/blog/${blogPostId}`;
     }
     return PAGE_PATHS[page] || '/';
   };
@@ -36,10 +37,18 @@ const App: React.FC = () => {
     const normalizedPath = pathname.toLowerCase().replace(/\/$/, '') || '/';
 
     if (normalizedPath.startsWith('/blog/')) {
-      const possibleId = Number(normalizedPath.split('/')[2]);
+      const segment = normalizedPath.split('/')[2] || '';
+      const [idCandidate] = segment.split('-');
+      const possibleId = Number(idCandidate);
+
+      if (Number.isFinite(possibleId)) {
+        return { page: Page.BLOG, blogPostId: possibleId };
+      }
+
+      const postBySlug = BLOG_POSTS.find((post) => toBlogSlug(post.title) === segment);
       return {
         page: Page.BLOG,
-        blogPostId: Number.isFinite(possibleId) ? possibleId : null,
+        blogPostId: postBySlug?.id ?? null,
       };
     }
 
@@ -101,7 +110,7 @@ const App: React.FC = () => {
     const tour = TOURS.find(t => t.id === tourId);
     if (tour) {
         if (!tour.checkoutUrl || !/^https?:\/\//i.test(tour.checkoutUrl)) {
-          window.alert('Stripe checkout is not configured yet. Please set VITE_STRIPE_CHECKOUT_EVENING and VITE_STRIPE_CHECKOUT_BRUNCH on Vercel.');
+          window.alert('Stripe checkout is not configured yet. Please set VITE_STRIPE_CHECKOUT_EVENING and VITE_STRIPE_CHECKOUT_BRUNCH in your deploy environment.');
           return;
         }
 
@@ -117,19 +126,26 @@ const App: React.FC = () => {
 
         // Create a pending reservation in Supabase so inventory is blocked immediately.
         // This should later be finalized by a Stripe webhook changing payment_status to "paid".
-        try {
-          await supabase.from('bookings').insert({
+        const { data: pendingBooking, error: pendingInsertError } = await supabase
+          .from('bookings')
+          .insert({
             date: dateStr,
             tour_id: tourId,
             guests,
             payment_status: 'pending',
             stripe_id: reservationRef,
-          });
-        } catch {
-          // If the insert fails (missing env/db issue), we still let checkout continue.
+          })
+          .select('id')
+          .single();
+
+        if (pendingInsertError || !pendingBooking?.id) {
+          console.error('Failed to create pending booking in Supabase:', pendingInsertError);
+          window.alert('We could not reserve your spots in our system right now. Please try again in a moment.');
+          return;
         }
 
         const params = new URLSearchParams({
+          booking_id: String(pendingBooking.id),
           ref: reservationRef,
           tour: tourId,
           date: dateStr,
