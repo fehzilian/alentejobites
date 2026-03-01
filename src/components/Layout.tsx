@@ -26,8 +26,10 @@ const PAGE_HREFS: Record<Page, string> = {
 };
 
 export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate, onBookClick }) => {
+  const COOKIE_CONSENT_KEY = 'ab_cookie_consent';
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [certImgError, setCertImgError] = useState(false);
   const [certSrc, setCertSrc] = useState('https://www.dgae.gov.pt/upload/SGMEE_5106/imagens/i010730.png');
@@ -39,6 +41,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const storedConsent = window.localStorage.getItem(COOKIE_CONSENT_KEY);
+    setShowCookieBanner(!storedConsent);
   }, []);
 
   useEffect(() => {
@@ -83,6 +90,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, activePage, onNavigate
       setImgError(true);
     };
   }, []);
+
+  const handleCookieConsent = (consent: 'essential_only' | 'accepted') => {
+    window.localStorage.setItem(COOKIE_CONSENT_KEY, consent);
+    setShowCookieBanner(false);
+  };
 
   const handleNavClick = (item: { label: string, page: Page }) => {
     setIsMobileMenuOpen(false);
