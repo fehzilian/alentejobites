@@ -44,9 +44,26 @@ VITE_SUPABASE_URL=https://SEU-PROJETO.supabase.co
 VITE_SUPABASE_ANON_KEY=SUA_ANON_KEY
 VITE_STRIPE_CHECKOUT_EVENING=https://buy.stripe.com/...
 VITE_STRIPE_CHECKOUT_BRUNCH=https://buy.stripe.com/...
+VITE_SANITY_PROJECT_ID=seuProjetoSanity
+VITE_SANITY_DATASET=production
+VITE_SANITY_API_VERSION=2024-01-01
 ```
 
 > Em Vite, apenas variáveis com prefixo `VITE_` ficam disponíveis no frontend.
+
+
+### Blog CMS (Sanity)
+- O blog suporta leitura dinâmica do Sanity via `src/lib/blog.tsx`.
+- Se o Sanity não estiver configurado, o site usa fallback local (`BLOG_POSTS`) para não quebrar o deploy.
+- Campos esperados no documento `post` do Sanity:
+  - `postId` (number, usado na URL)
+  - `title`
+  - `excerpt`
+  - `body` (Portable Text)
+  - `publishedAt` e/ou `date`
+  - `author` (referência opcional)
+  - `category` (referência opcional)
+  - `mainImage`
 
 ## Rodar localmente
 
@@ -69,6 +86,7 @@ npm run build
 - `src/data.tsx` — dados dos tours + checkout URLs
 - `scripts/validate-index-html.mjs` — validação anti-quebra de build
 - `STRIPE_SUPABASE_SETUP.md` — guia completo do fluxo Stripe + webhook + Supabase
+- `SANITY_SETUP.md` — tutorial completo para configurar e operar o blog via Sanity
 
 ## Observação de operação
 

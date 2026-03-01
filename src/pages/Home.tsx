@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Page } from '../types.ts';
-import { BLOG_POSTS, TOURS, getBlogPath } from '../data.tsx';
+import { TOURS, getBlogPath } from '../data.tsx';
+import { BlogPost } from '../types.ts';
 import { Button, Section, SectionTitle } from '../components/UI.tsx';
 import { SEO } from '../components/SEO.tsx';
 
@@ -8,6 +9,7 @@ interface HomeProps {
   onNavigate: (page: Page) => void;
   onBook: (tourId: string) => void;
   onBlogClick?: (postId: number) => void;
+  blogPosts: BlogPost[];
 }
 
 // --- Helper Components ---
@@ -45,12 +47,12 @@ interface BlogSidebarProps {
     onViewAllClick?: () => void;
 }
 
-const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onViewAllClick }) => (
+const BlogSidebar: React.FC<BlogSidebarProps & { posts: BlogPost[] }> = ({ className, onBlogClick, onViewAllClick, posts }) => (
     <div className={`bg-white rounded-xl border border-gray-100 shadow-sm p-6 ${className}`}>
         <h3 className="font-serif text-2xl text-olive mb-6 border-b border-gold/20 pb-3">Latest Stories</h3>
         <div className="space-y-6">
             {/* Show only first 5 posts in sidebar */}
-            {BLOG_POSTS.slice(0, 5).map((post) => (
+            {posts.slice(0, 5).map((post) => (
                 <a
                     key={post.id}
                     href={getBlogPath(post)}
@@ -88,7 +90,7 @@ const BlogSidebar: React.FC<BlogSidebarProps> = ({ className, onBlogClick, onVie
     </div>
 );
 
-export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) => {
+export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick, blogPosts }) => {
   const [showAllFAQs, setShowAllFAQs] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   // Merge-safety no-op: prevents stale `setShowLaunchBanner(...)` references from breaking CI on out-of-date deploy branches.
@@ -311,6 +313,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
               {/* Right Column: Blog Sidebar (Visible on Desktop) */}
               <div className="hidden md:block md:w-1/4">
                   <BlogSidebar 
+                    posts={blogPosts}
                     className="sticky top-28" 
                     onBlogClick={onBlogClick}
                     onViewAllClick={() => onNavigate(Page.BLOG)}
@@ -482,6 +485,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       {/* Mobile Blog Section (Only visible on mobile, below trusted travelers) */}
       <div className="md:hidden px-4 py-12 bg-cream border-t border-gray-100">
            <BlogSidebar 
+                    posts={blogPosts}
                 onBlogClick={onBlogClick}
                 onViewAllClick={() => onNavigate(Page.BLOG)}
            />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Tour } from './types.ts';
 import { TOURS, BLOG_POSTS, getBlogPath, toBlogSlug } from './data.tsx';
+import { fetchBlogPosts } from './lib/blog.tsx';
 import { Layout } from './components/Layout.tsx';
 import { Home } from './pages/Home.tsx';
 import { TourDetails } from './pages/TourDetails.tsx';
@@ -27,7 +28,7 @@ const App: React.FC = () => {
 
   const getPathForPage = (page: Page, blogPostId?: number | null): string => {
     if (page === Page.BLOG && blogPostId) {
-      const post = BLOG_POSTS.find((item) => item.id === blogPostId);
+      const post = blogPosts.find((item) => item.id === blogPostId);
       return post ? getBlogPath(post) : `/blog/${blogPostId}`;
     }
     return PAGE_PATHS[page] || '/';
@@ -45,7 +46,7 @@ const App: React.FC = () => {
         return { page: Page.BLOG, blogPostId: possibleId };
       }
 
-      const postBySlug = BLOG_POSTS.find((post) => toBlogSlug(post.title) === segment);
+      const postBySlug = blogPosts.find((post) => toBlogSlug(post.title) === segment);
       return {
         page: Page.BLOG,
         blogPostId: postBySlug?.id ?? null,
@@ -66,6 +67,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [selectedBlogPostId, setSelectedBlogPostId] = useState<number | null>(null);
+  const [blogPosts, setBlogPosts] = useState(BLOG_POSTS);
 
   const navigateTo = (page: Page, options?: { replace?: boolean }) => {
     const nextBlogPostId = page === Page.BLOG ? selectedBlogPostId : null;
@@ -104,6 +106,31 @@ const App: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    fetchBlogPosts().then((posts) => {
+      if (!mounted || !posts.length) return;
+      setBlogPosts(posts);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentPage !== Page.BLOG || selectedBlogPostId !== null) {
+      return;
+    }
+
+    const route = getRouteStateFromPath(window.location.pathname);
+    if (route.blogPostId !== null) {
+      setSelectedBlogPostId(route.blogPostId);
+    }
+  }, [blogPosts, currentPage, selectedBlogPostId]);
+
 
   // Handle Booking: creates a pending reservation and redirects to Stripe checkout
   const handleBooking = async (tourId: string, date?: Date, time?: string, guests?: number) => {
@@ -194,6 +221,7 @@ const App: React.FC = () => {
                      if(tour) handleNavigateToBooking(tourId, tour.page);
                 }} 
                 onBlogClick={handleBlogNavigation} 
+                blogPosts={blogPosts}
             />
         );
       case Page.EVENING_TOUR:
@@ -205,11 +233,11 @@ const App: React.FC = () => {
       case Page.CONTACT:
         return <ContactPage />;
       case Page.BLOG:
-        return <BlogPage onNavigate={navigateTo} initialPostId={selectedBlogPostId} />;
+        return <BlogPage onNavigate={navigateTo} initialPostId={selectedBlogPostId} posts={blogPosts} />;
       case Page.TERMS: return <TermsPage />;
       case Page.CANCELLATION: return <CancellationPage />;
       case Page.COMPLAINTS: return <TextPage title="Complaints"><p>Redirecting to Complaints Book...</p></TextPage>;
-      default: return <Home onNavigate={navigateTo} onBook={handleBooking} />;
+      default: return <Home onNavigate={navigateTo} onBook={handleBooking} blogPosts={blogPosts} />;
     }
   };
 
