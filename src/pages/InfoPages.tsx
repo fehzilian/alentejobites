@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Page } from '../types.ts';
-import { BLOG_POSTS } from '../data.tsx';
+import { getBlogPath } from '../data.tsx';
+import { BlogPost } from '../types.ts';
 import { Button, Section, SectionTitle } from '../components/UI.tsx';
 import { SEO } from '../components/SEO.tsx';
 
@@ -163,7 +164,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onBlogClick })
 );
 
 // --- Blog Page ---
-export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: number | null}> = ({ onNavigate, initialPostId }) => {
+export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: number | null, posts: BlogPost[]}> = ({ onNavigate, initialPostId, posts }) => {
     const [viewingPostId, setViewingPostId] = useState<number | null>(null);
 
     // Effect to handle navigation from external links (Home sidebar)
@@ -174,15 +175,25 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
     }, [initialPostId]);
 
     // Use all posts without filtering
-    const posts = BLOG_POSTS;
-    const featuredPost = BLOG_POSTS[0];
+    const featuredPost = posts[0];
+
+    if (!featuredPost) {
+        return (
+            <div className="pt-24 bg-white min-h-screen">
+                <div className="max-w-4xl mx-auto px-6 py-16 text-center">
+                    <h1 className="font-serif text-4xl text-charcoal mb-3">Journal</h1>
+                    <p className="text-gray-500">No posts published yet.</p>
+                </div>
+            </div>
+        );
+    }
 
     // --- Single Post View ---
     if (viewingPostId) {
-        const post = BLOG_POSTS.find(p => p.id === viewingPostId);
+        const post = posts.find(p => p.id === viewingPostId);
         if (!post) return null;
 
-        const postHeroImage = post.image;
+        const postHeroImage = post.id === 1 ? 'https://www.tasteatlas.com/areas/awards/content/img/share/main_image.jpg?v2' : post.image;
 
         const handleBackToJournal = () => {
             setViewingPostId(null);
@@ -218,8 +229,8 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                     <div className={`w-full rounded-xl shadow-lg mb-12 ${post.id === 1 ? 'bg-cream border border-gold/20 p-8 md:p-10' : ''}`}>
                         <img
                             src={postHeroImage}
-                            alt={post.id === 1 ? 'TasteAtlas logo' : post.title}
-                            className={`w-full ${post.id === 1 ? 'h-20 md:h-24 object-contain' : 'h-[50vh] object-cover rounded-xl'}`}
+                            alt={post.title}
+                            className={`w-full h-[50vh] rounded-xl ${post.id === 1 ? 'object-contain bg-white' : 'object-cover'}`}
                         />
                     </div>
 
@@ -276,7 +287,7 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                     className="group relative h-[600px] rounded-sm overflow-hidden mb-20 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500"
                     onClick={() => {
                         setViewingPostId(featuredPost.id);
-                        window.history.pushState({}, '', `/blog/${featuredPost.id}`);
+                        window.history.pushState({}, '', getBlogPath(featuredPost));
                     }}
                 >
                     <div className="absolute inset-0">
@@ -300,7 +311,7 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                     {posts.filter(p => p.id !== featuredPost.id).map(post => (
                         <a
                             key={post.id}
-                            href={`/blog/${post.id}`}
+                            href={getBlogPath(post)}
                             className="flex flex-col group cursor-pointer"
                             onClick={(event) => {
                                 if (
@@ -314,7 +325,7 @@ export const BlogPage: React.FC<{onNavigate: (p: Page) => void, initialPostId?: 
                                 }
                                 event.preventDefault();
                                 setViewingPostId(post.id);
-                                window.history.pushState({}, '', `/blog/${post.id}`);
+                                window.history.pushState({}, '', getBlogPath(post));
                             }}
                         >
                             <div className="h-64 overflow-hidden mb-6 rounded-sm relative">
