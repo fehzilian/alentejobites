@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "prebuild": "node scripts/validate-index-html.mjs"
+    "prebuild": "node scripts/validate-index-html.mjs",
+    "bootstrap:booking": "node scripts/bootstrap-booking-automation.mjs"
   },
   "dependencies": {
     "react": "^18.2.0",
