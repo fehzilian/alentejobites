@@ -182,22 +182,25 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
       />
 
       {/* Hero Section */}
-      <div className="relative h-[88vh] md:h-screen w-full overflow-hidden flex items-center justify-center text-center">
+      <div className="relative h-screen w-full overflow-hidden flex items-center justify-center text-center">
         <video
           ref={heroVideoRef}
           autoPlay
           muted
           loop
           playsInline
+          controls={false}
+          disablePictureInPicture
+          controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
           preload="metadata"
-          className="absolute inset-0 w-full h-full object-cover z-0"
+          className="pointer-events-none absolute inset-0 w-full h-full object-cover z-0"
         >
           <source src="/home-hero.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-br from-olive/55 to-charcoal/45 z-10" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent via-olive/30 to-terracotta/70 z-10" />
 
-        <div className="relative z-20 max-w-4xl px-6 text-white pt-20">
+        <div className="relative z-20 max-w-4xl px-6 text-white pt-36 md:pt-24 pb-14 md:pb-10">
           <button
             onClick={() => {
               if (onBlogClick) {
@@ -219,7 +222,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onBook, onBlogClick }) =
           <p className="text-lg mb-10 leading-relaxed max-w-2xl mx-auto drop-shadow-md">
             Discover Évora through its most traditional flavors, local stories, and family-run food spots.
           </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
+          <div className="flex flex-col md:flex-row gap-4 justify-center mt-2 md:mt-0">
             <Button onClick={() => {
                 const el = document.getElementById('tours-section');
                 el?.scrollIntoView({behavior: 'smooth'});

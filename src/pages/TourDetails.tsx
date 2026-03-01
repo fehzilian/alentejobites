@@ -336,7 +336,7 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 relative">
 
                 {/* Main Content (Center) */}
-                <div className="lg:col-span-9 pb-20">
+                <div className="lg:col-span-9 pb-28 md:pb-20">
                     {/* Mobile Info Bar */}
                     <div className="md:hidden flex items-center justify-between text-xs font-bold text-gray-500 bg-gray-50 p-4 rounded-lg mb-8 border border-gray-100">
                         <div className="flex items-center gap-1"><span>⏰</span> {tour.time}</div>
@@ -501,6 +501,8 @@ export const TourDetails: React.FC<TourDetailsProps> = ({ onNavigate, onBook, to
         <Drawer isOpen={isMobileDrawerOpen} onClose={() => setIsMobileDrawerOpen(false)}>
             <BookingForm />
         </Drawer>
+
+        <div className="h-24 lg:hidden" aria-hidden="true" />
     </div>
   );
 };
